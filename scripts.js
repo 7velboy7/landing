@@ -1,0 +1,544 @@
+/* Scripts for interactivity */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    /* 1. Mobile Menu Toggle */
+    const menuBtn = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', () => {
+            const isHidden = mobileMenu.classList.contains('hidden');
+
+            if (isHidden) {
+                mobileMenu.classList.remove('hidden');
+                // Small timeout to allow display:block to apply before transform
+                setTimeout(() => {
+                    mobileMenu.classList.add('active');
+                }, 10);
+            } else {
+                mobileMenu.classList.remove('active');
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300); // Match transition duration
+            }
+        });
+
+        // Close menu when clicking a link
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            });
+        });
+    }
+
+    /* 2. FAQ Accordion */
+    const faqTriggers = document.querySelectorAll('.faq-trigger');
+
+    faqTriggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            const item = trigger.closest('.faq-item');
+
+            // Optional: Close others
+            // document.querySelectorAll('.faq-item').forEach(i => {
+            //     if (i !== item) i.classList.remove('active');
+            // });
+
+            item.classList.toggle('active');
+        });
+    });
+
+    /* 3. Smooth Scroll (Fallback for older browsers if needed, mostly handled by CSS) */
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                // Check if we need to pre-select a project type
+                const projectType = this.getAttribute('data-project-type');
+                if (projectType) {
+                    const select = document.getElementById('project_type_select');
+                    if (select) {
+                        select.value = projectType;
+                    }
+                }
+
+                // Offset for fixed header
+                const headerHeight = 80;
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+        });
+    });
+
+    /* 4. Language Switcher Logic */
+    const translations = {
+        en: {
+            nav_work: "Work",
+            nav_services: "Services",
+            nav_process: "Process",
+            nav_about: "About",
+            nav_availability: "Check Availability",
+            nav_request: "Request Project",
+            nav_contact_me: "Contact Me",
+            nav_request_project: "Request a Project",
+            hero_title: "Visual storytelling for <br> <span style='color: var(--color-secondary);'>ambitious brands & people.</span>",
+            hero_sub: "I help brands, publishers, and musicians turn complex ideas into distinct visual narratives. Strategic illustration that turns attention into inquiries.",
+            hero_cta_request: "Request a Project",
+            hero_cta_view: "View Selected Cases",
+            badge_available: "Available for Q4 2023",
+            social_trusted: "Trusted by creative teams at:",
+            services_title: "Focus & Deliverables",
+            services_sub: "Select a category to see relevant examples.",
+            service_ed_title: "Book & Editorial",
+            service_ed_sub: "Book covers, book illustrations, and conceptual editorial art for magazines.",
+            service_ed_cta: "See Examples",
+            service_brand_title: "Brand Illustration",
+            service_brand_sub: "Custom brand illustration for packaging, products, and physical spaces.",
+            service_brand_cta: "See brand work",
+            service_poster_title: "Album Art & Posters",
+            service_poster_sub: "Full-release visuals for artists — covers, vinyl, merch, and posters.",
+            service_poster_cta: "See Examples",
+            work_title: "Selected Works",
+            work_sub: "selection of concept-led work built for real-world use.",
+            about_title: "Hey, I'm <span style='color: black'>A</span><span style='color: #E6C300'>l</span><span style='color: black'>e</span><span style='color: var(--color-alert)'>x</span> <span style='color: var(--color-secondary)'>V</span><span style='color: black'>e</span><span style='color: var(--color-accent)'>l</span><span style='color: #E6C300'>b</span><span style='color: black'>o</span><span style='color: #E6C300'>y</span>",
+            about_sub: "I am an independent illustrator based in Europe, working with clients worldwide. My background in graphic design heavily influences my illustration work—I favor strong geometry, clear composition, and conceptual wit over decoration.",
+            about_sub_extra: "I work best with clients who value clarity and aren't afraid of bold metaphors. When I'm not drawing, I'm likely analyzing brutalist architecture or collecting vinyl records.",
+            faq_title: "Common Questions",
+            contact_title: "Let's discuss your project.",
+            contact_sub: "Currently accepting new commissions for Q4 2023. Fill out the form or send me a direct email.",
+            services_list_title: "Services & Formats",
+            service_item1_title: "Brand Illustration Systems",
+            service_item1_sub: "Key visual + assets",
+            service_item2_title: "Packaging & Physical Products",
+            service_item2_sub: "Print-ready files",
+            service_item3_title: "Book & Editorial Illustration",
+            service_item3_sub: "concept + illustration",
+            service_item4_title: "Animation Assets",
+            service_item4_sub: "Layered Source",
+            services_minimum_title: "Project minimum: $300 USD",
+            services_minimum_sub: "Ensures dedicated time and high-quality focus on your brief.",
+            work_portfolio_cta: "View full portfolio",
+            download_pdf: "Download PDF",
+            usp_title: "Why clients choose to work with me",
+            usp1_title: "Strong Concept-First Approach",
+            usp1_text: "I turn complex ideas into clean visuals that communicate fast — perfect for campaigns, covers, and packaging.",
+            usp2_title: "Production-ready delivery",
+            usp2_text: "CMYK-safe, web-ready, and organized files your designers and printers can use immediately.",
+            usp3_title: "Reliable timelines",
+            usp3_text: "You always know what’s next: checkpoints, revisions, and delivery dates are clear.",
+            testimonials_title: "What people say",
+            t1_quote: "Alex is a rare find. He doesn't just draw; he thinks deeply about the brand's message.",
+            t1_author: "Sarah Jenkins",
+            t1_role: "Art Director, Monocle",
+            t2_quote: "The turnaround was incredibly fast, and the quality was top-notch. Perfect for our campaign.",
+            t2_author: "Marcus Thorne",
+            t2_role: "Lead Designer, Spotify",
+            t3_quote: "His conceptual approach turned a simple brief into a visual masterpiece. Highly recommended.",
+            t3_author: "Elena Rossi",
+            t3_role: "Founder, Knygolove",
+            form_name: "Name",
+            form_email: "Email",
+            form_project_type: "Project Type",
+            form_category_placeholder: "Select a category...",
+            form_ed: "Editorial Illustration",
+            form_brand: "Brand Illustration",
+            form_pkg: "Packaging",
+            form_book: "Book Cover",
+            form_album: "Album Cover",
+            form_other: "Other",
+            form_budget: "Approx. Budget",
+            form_budget_placeholder: "Select range...",
+            form_details: "Project Details",
+            form_details_placeholder: "Briefly describe what you need...",
+            form_submit: "Send Inquiry",
+            social_tg: "Telegram",
+            social_wa: "WhatsApp"
+        },
+        ua: {
+            nav_work: "Роботи",
+            nav_services: "Послуги",
+            nav_process: "Процес",
+            nav_about: "Про мене",
+            nav_availability: "Перевірити доступність",
+            nav_request: "Замовити проект",
+            nav_contact_me: "Написати мені",
+            nav_request_project: "Замовити проект",
+            hero_title: "Візуальний сторітеллінг для <br> <span style='color: var(--color-secondary);'>амбітних брендів та людей.</span>",
+            hero_sub: "Я допомагаю брендам, видавництвам та музикантам перетворювати складні ідеї на виразні візуальні наративи. Стратегічна ілюстрація, що перетворює увагу на запити.",
+            hero_cta_request: "Замовити проект",
+            hero_cta_view: "Дивитися кейси",
+            badge_available: "Доступний для Q4 2023",
+            social_trusted: "Нам довіряють:",
+            services_title: "Фокус та Послуги",
+            services_sub: "Оберіть категорію, щоб переглянути відповідні приклади.",
+            service_ed_title: "Книги та Едіторіал",
+            service_ed_sub: "Обкладинки книг, ілюстрації для видавництв та концептуальний едіторіал для журналів.",
+            service_ed_cta: "Дивитись приклади",
+            service_brand_title: "Брендова ілюстрація",
+            service_brand_sub: "Брендова ілюстрація для пакування, продуктів та фізичних просторів.",
+            service_brand_cta: "Дивитись роботи для брендів",
+            service_poster_title: "Обкладинки та Постери",
+            service_poster_sub: "Повний візуальний супровід релізів — обкладинки, вініл, мерч та постери.",
+            service_poster_cta: "Дивитись приклади",
+            work_title: "Обрані роботи",
+            work_sub: "Кураторська добірка комерційних проектів з вимірними результатами.",
+            about_title: "Привіт, я <span style='color: black'>A</span><span style='color: #E6C300'>l</span><span style='color: black'>e</span><span style='color: var(--color-alert)'>x</span> <span style='color: var(--color-secondary)'>V</span><span style='color: black'>e</span><span style='color: var(--color-accent)'>l</span><span style='color: #E6C300'>b</span><span style='color: black'>o</span><span style='color: #E6C300'>y</span>",
+            about_sub: "Я незалежний ілюстратор з Європи, працюю з клієнтами по всьому світу. Мій досвід у графічному дизайні сильно впливає на мої ілюстрації — я віддаю перевагу строгій геометрії, чіткій композиції та концептуальній дотепності замість декору.",
+            about_sub_extra: "Я найкраще працюю з клієнтами, які цінують ясність і не бояться сміливих метафор. Коли я не малюю, я, швидше за все, аналізую бруталістську архітектуру або збираю вінілові платівки.",
+            faq_title: "Часті запитання",
+            contact_title: "Обговоримо ваш проект.",
+            contact_sub: "Зараз приймаю нові замовлення на Q4 2023. Заповніть форму або напишіть мені напряму.",
+            services_list_title: "Послуги та Формати",
+            service_item1_title: "Системи ілюстрацій для брендів",
+            service_item1_sub: "Ключовий візуал + активи",
+            service_item2_title: "Пакування та фізичні товари",
+            service_item2_sub: "Готові до друку файли",
+            service_item3_title: "Книжкова та журнальна ілюстрація",
+            service_item3_sub: "концепт + ілюстрація",
+            service_item4_title: "Активи для анімації",
+            service_item4_sub: "Пошарові сорс-файли",
+            services_minimum_title: "Мінімальне замовлення: $300 USD",
+            services_minimum_sub: "Гарантує присвячений час та фокус на вашому брифi.",
+            work_portfolio_cta: "Дивитися повне портфоліо",
+            download_pdf: "Завантажити PDF",
+            usp_title: "Чому клієнти обирают роботу зі мною",
+            usp1_title: "Концептуальний підхід",
+            usp1_text: "Я перетворюю складні ідеї на чисті візуальні образи, що швидко комунікують — ідеально для рекламних кампаній, обкладинок та пакування.",
+            usp2_title: "Готові до виробництва файли",
+            usp2_text: "Файли, готові до друку (CMYK) та вебу, організовані для негайного використання дизайнерами та друкарями.",
+            usp3_title: "Надійні терміни",
+            usp3_text: "Ви завжди знаєте, що далі: чекпоінти, правки та терміни здачі чітко визначені.",
+            testimonials_title: "Що кажуть люди",
+            t1_quote: "Алекс — справжня знахідка. Він не просто малює, а глибоко занурюється в саму суть повідомлення бренду.",
+            t1_author: "Сара Дженкінс",
+            t1_role: "Арт-директор, Monocle",
+            t2_quote: "Терміни виконання були неймовірно швидкими, а якість — на найвищому рівні. Ідеально для нашої кампанії.",
+            t2_author: "Маркус Торн",
+            t2_role: "Провідний дизайнер, Spotify",
+            t3_quote: "Його концептуальний підхід перетворив звичайний бриф на візуальний шедевр. Дуже рекомендую!",
+            t3_author: "Олена Россі",
+            t3_role: "Засновниця, Книголав",
+            form_name: "Ім'я",
+            form_email: "Email",
+            form_project_type: "Тип проекту",
+            form_category_placeholder: "Оберіть категорію...",
+            form_ed: "Едіторіал ілюстрація",
+            form_brand: "Брендова ілюстрація",
+            form_pkg: "Упаковка",
+            form_book: "Обкладинка книги",
+            form_album: "Обкладинка альбому",
+            form_other: "Інше",
+            form_budget: "Приблизний бюджет",
+            form_budget_placeholder: "Оберіть діапазон...",
+            form_details: "Деталі проекту",
+            form_details_placeholder: "Коротко опишіть, що вам потрібно...",
+            form_submit: "Надіслати запит",
+            social_tg: "Telegram",
+            social_wa: "WhatsApp"
+        }
+    };
+
+    const langBtns = document.querySelectorAll('.lang-btn');
+
+    function setLanguage(lang) {
+        // Toggle Active Class
+        langBtns.forEach(btn => {
+            if (btn.getAttribute('data-lang') === lang) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Update Text Content
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            if (translations[lang] && translations[lang][key]) {
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    element.placeholder = translations[lang][key];
+                } else if (key.includes('title') || key.includes('hero')) {
+                    element.innerHTML = translations[lang][key];
+                } else {
+                    element.textContent = translations[lang][key];
+                }
+            }
+        });
+
+        // Save preference
+        localStorage.setItem('preferredLang', lang);
+
+        // Prepare About text for typing animation
+        prepareAboutText();
+    }
+
+    function prepareAboutText() {
+        const containers = document.querySelectorAll('.about-text-reveal');
+        containers.forEach(container => {
+            const text = container.textContent.trim();
+            const words = text.split(/\s+/);
+            container.innerHTML = words.map(word => `<span class="typing-word">${word}</span>`).join(' ');
+        });
+    }
+
+    langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const lang = btn.getAttribute('data-lang');
+            setLanguage(lang);
+        });
+    });
+
+    // Load saved preference
+    const savedLang = localStorage.getItem('preferredLang') || 'en';
+    setLanguage(savedLang);
+
+    /* 5. Header CTA Scroll Logic */
+    const headerCta = document.getElementById('header-cta');
+    const heroSection = document.querySelector('.hero');
+
+    if (headerCta && heroSection) {
+        const updateHeaderCta = () => {
+            const lang = localStorage.getItem('preferredLang') || 'en';
+            if (window.scrollY > 400) {
+                headerCta.classList.add('scrolled');
+                headerCta.textContent = translations[lang].nav_request_project;
+            } else {
+                headerCta.classList.remove('scrolled');
+                headerCta.textContent = translations[lang].nav_contact_me;
+            }
+            // Re-apply data-i18n attribute for the current state
+            headerCta.setAttribute('data-i18n', window.scrollY > 400 ? 'nav_request_project' : 'nav_contact_me');
+        };
+
+        window.addEventListener('scroll', updateHeaderCta);
+        // Initial call to set correct text on load
+        updateHeaderCta();
+
+        // Listen for language changes to update this button immediately
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', updateHeaderCta);
+        });
+    }
+
+    /* 6. Form Submission Logic */
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.textContent;
+
+            // Show loading state
+            submitBtn.textContent = "Sending...";
+            submitBtn.disabled = true;
+
+            const formData = new FormData(contactForm);
+
+            try {
+                // Using Formspree as the backend service
+                // The user will need to confirm the email on Formspree after the first submission
+                const response = await fetch('https://formspree.io/f/itsme@alexvelboy.com', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    alert('Thank you! Your message has been sent successfully.');
+                    contactForm.reset();
+                } else {
+                    const data = await response.json();
+                    if (Object.hasOwn(data, 'errors')) {
+                        alert(data["errors"].map(error => error["message"]).join(", "));
+                    } else {
+                        alert('Oops! There was a problem submitting your form. Please try again.');
+                    }
+                }
+            } catch (error) {
+                alert('Oops! There was a problem submitting your form. Please try again.');
+            } finally {
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    /* 7. Audio Playback Logic (Final Step - Lightning) */
+    const finalStep = document.getElementById('final-step');
+    const alarmAudio = document.getElementById('alarm-audio');
+    const lightningVideos = document.querySelectorAll('.lightning-video');
+
+    if (finalStep && alarmAudio) {
+        finalStep.addEventListener('mouseenter', () => {
+            // Set audio start time
+            if (Math.abs(alarmAudio.currentTime - 27) > 0.5) {
+                alarmAudio.currentTime = 27;
+            }
+
+            const startPlayback = () => {
+                document.body.classList.add('fx-active'); // Start CSS animation
+
+                // Calculate center position for zoom effect
+                const rect = finalStep.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const deltaX = (window.innerWidth / 2) - centerX;
+                const deltaY = (window.innerHeight / 2) - centerY;
+                finalStep.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(2)`;
+
+                // Play lightning videos
+                lightningVideos.forEach(v => {
+                    v.currentTime = 0;
+                    v.play().catch(e => console.log('Lightning video play failed', e));
+                });
+            };
+
+            alarmAudio.play()
+                .then(startPlayback)
+                .catch(error => {
+                    console.warn("Audio play failed (autoplay policy?), forcing visual effects anyway.", error);
+                    // Force visual effects even if audio fails
+                    startPlayback();
+                });
+        });
+
+        const resetAll = () => {
+            alarmAudio.pause();
+            document.body.classList.remove('fx-active');
+            finalStep.style.transform = '';
+            lightningVideos.forEach(v => {
+                v.pause();
+            });
+        };
+
+        finalStep.addEventListener('mouseleave', resetAll);
+
+        // Auto-stop audio loop
+        alarmAudio.addEventListener('timeupdate', () => {
+            if (alarmAudio.currentTime >= 39) {
+                resetAll();
+                alarmAudio.currentTime = 27;
+            }
+        });
+    }
+
+
+
+    /* 8. Confetti Animation (Step 2) */
+    const stepConcepts = document.getElementById('step-concepts');
+
+    if (stepConcepts) {
+        stepConcepts.addEventListener('mouseenter', () => {
+            // Create a burst of colorful confetti
+            const rect = stepConcepts.getBoundingClientRect();
+            // Origin at the center of the block
+            const x = (rect.left + rect.width / 2) / window.innerWidth;
+            const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+            confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { x, y },
+                colors: ['#FFE014', '#00B80F', '#2B57F5', '#F52B2B'],
+                ticks: 200,
+                gravity: 1.2,
+                scalar: 0.9,
+                zIndex: 1000
+            });
+        });
+    }
+
+    /* 9. Scroll-triggered Section Confetti */
+    const processSection = document.getElementById('process');
+    const sectionConfetti = processSection ? processSection.querySelector('.section-confetti-video') : null;
+
+    if (processSection && sectionConfetti) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    console.log("Process section in view, starting confetti...");
+                    sectionConfetti.classList.add('active');
+                    sectionConfetti.load(); // Force load
+                    sectionConfetti.play().catch(e => console.error("Section confetti play error:", e));
+                } else {
+                    sectionConfetti.classList.remove('active');
+                    sectionConfetti.pause();
+                }
+            });
+        }, { threshold: 0.1 }); // Lower threshold for earlier start
+
+        observer.observe(processSection);
+    }
+
+    /* 10. About Section Background Scroll-linked Animation */
+    const aboutSection = document.getElementById('about');
+    const revealCircle = aboutSection ? aboutSection.querySelector('.about-bg-reveal') : null;
+
+    if (aboutSection && revealCircle) {
+        window.addEventListener('scroll', () => {
+            const rect = aboutSection.getBoundingClientRect();
+            const viewHeight = window.innerHeight;
+
+            // Progress calculation for left-to-right fill
+            // 0: section starts entering viewport
+            // 1: section is mostly in view
+            const scrollStart = viewHeight;
+            const scrollEnd = 0;
+            const currentPos = rect.top;
+
+            // Fill starts when top of section is at bottom of viewport
+            // and completes when top of section reaches top of viewport
+            let progress = 1 - (currentPos / viewHeight);
+            progress = Math.max(0, Math.min(1, progress));
+
+            revealCircle.style.transform = `scaleX(${progress})`;
+
+            // Trigger playful text animation and apply jumping effect
+            const spans = aboutSection.querySelectorAll('.playful-hey span, .playful-name span');
+            if (progress > 0.05) {
+                aboutSection.classList.add('text-active');
+
+                // Active jumping effect based on progress and index
+                spans.forEach((span, index) => {
+                    // Create a wave effect: each letter jumps based on scroll progress and its index
+                    const jumpHeight = 30; // pixels
+                    const waveSpeed = 8;
+                    const offset = Math.sin((progress * waveSpeed) + (index * 0.4)) * jumpHeight * progress;
+                    const rotation = Math.cos((progress * waveSpeed) + (index * 0.4)) * 10 * progress;
+
+                    span.style.transform = `translateY(${offset}px) rotate(${rotation}deg)`;
+                });
+
+                // Trigger typing animation when background is mostly full
+                if (progress > 0.8) {
+                    const revealParagraphs = aboutSection.querySelectorAll('.about-text-reveal');
+                    revealParagraphs.forEach(p => p.classList.add('active'));
+                }
+            } else {
+                aboutSection.classList.remove('text-active');
+                spans.forEach(span => {
+                    span.style.transform = ''; // Reset
+                });
+
+                // Hide text again if user scrolls way back up
+                const revealParagraphs = aboutSection.querySelectorAll('.about-text-reveal');
+                revealParagraphs.forEach(p => p.classList.remove('active'));
+            }
+        }, { passive: true });
+    }
+});
