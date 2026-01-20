@@ -1199,6 +1199,39 @@ body.fx-active #lightning-container {
     pointer-events: none;
 }
 
+.about-heading {
+    margin-top: -0.5rem;
+}
+
+.playful-name {
+    display: inline-flex;
+    transform-origin: 100% -20%;
+}
+
+.playful-name.drop-start {
+    transform: translateY(-120vh) rotate(14deg);
+    opacity: 0;
+}
+
+.playful-name.is-dropping {
+    animation: name-drop-in 1.15s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+
+@keyframes name-drop-in {
+    0% {
+        transform: translateY(-120vh) rotate(14deg);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.about-text-top {
+    margin-top: 1.5rem;
+}
+
 .playful-hey span,
 .playful-name span {
     display: inline-block;

@@ -114,8 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
             work_title: "Selected Works",
             work_sub: "selection of concept-led work built for real-world use.",
             about_title: "Hey, I'm <span style='color: black'>A</span><span style='color: #E6C300'>l</span><span style='color: black'>e</span><span style='color: var(--color-alert)'>x</span> <span style='color: var(--color-secondary)'>V</span><span style='color: black'>e</span><span style='color: var(--color-accent)'>l</span><span style='color: #E6C300'>b</span><span style='color: black'>o</span><span style='color: #E6C300'>y</span>",
-            about_sub: "I am an independent illustrator based in Europe, working with clients worldwide. My background in graphic design heavily influences my illustration work—I favor strong geometry, clear composition, and conceptual wit over decoration.",
-            about_sub_extra: "I work best with clients who value clarity and aren't afraid of bold metaphors. When I'm not drawing, I'm likely analyzing brutalist architecture or collecting vinyl records.",
+            about_sub: "I'm Alex Velboy — a Europe-based illustrator & visual artist.",
+            about_sub_2: "I work with brands, editors, and creative teams who want visuals with a clear idea — not just something \"nice\"",
+            about_sub_3: "My superpower is absurd thinking with precision: I take a brief, find the weird truth inside it, and push it until the concept clicks hard — visually, emotionally, and strategically.",
+            about_sub_4: "Human detail, because I'm not a PDF: I've wanted to be an artist since I was a kid. Somehow it worked out — and now my favorite part is taking wild concepts and turning them into something real: campaigns, spaces, covers, murals, installations, an object you can touch and visuals you can actually live with.",
             faq_title: "Common Questions",
             contact_title: "Let's discuss your project.",
             contact_sub: "Currently accepting new commissions for Q4 2023. Fill out the form or send me a direct email.",
@@ -196,8 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
             work_title: "Обрані роботи",
             work_sub: "Кураторська добірка комерційних проектів з вимірними результатами.",
             about_title: "Привіт, я <span style='color: black'>A</span><span style='color: #E6C300'>l</span><span style='color: black'>e</span><span style='color: var(--color-alert)'>x</span> <span style='color: var(--color-secondary)'>V</span><span style='color: black'>e</span><span style='color: var(--color-accent)'>l</span><span style='color: #E6C300'>b</span><span style='color: black'>o</span><span style='color: #E6C300'>y</span>",
-            about_sub: "Я незалежний ілюстратор з Європи, працюю з клієнтами по всьому світу. Мій досвід у графічному дизайні сильно впливає на мої ілюстрації — я віддаю перевагу строгій геометрії, чіткій композиції та концептуальній дотепності замість декору.",
-            about_sub_extra: "Я найкраще працюю з клієнтами, які цінують ясність і не бояться сміливих метафор. Коли я не малюю, я, швидше за все, аналізую бруталістську архітектуру або збираю вінілові платівки.",
+            about_sub: "I'm Alex Velboy — a Europe-based illustrator & visual artist.",
+            about_sub_2: "I work with brands, editors, and creative teams who want visuals with a clear idea — not just something \"nice\"",
+            about_sub_3: "My superpower is absurd thinking with precision: I take a brief, find the weird truth inside it, and push it until the concept clicks hard — visually, emotionally, and strategically.",
+            about_sub_4: "Human detail, because I'm not a PDF: I've wanted to be an artist since I was a kid. Somehow it worked out — and now my favorite part is taking wild concepts and turning them into something real: campaigns, spaces, covers, murals, installations, an object you can touch and visuals you can actually live with.",
             faq_title: "Часті запитання",
             contact_title: "Обговоримо ваш проект.",
             contact_sub: "Зараз приймаю нові замовлення на Q4 2023. Заповніть форму або напишіть мені напряму.",
@@ -488,6 +492,8 @@ document.addEventListener('DOMContentLoaded', () => {
     /* 10. About Section Background Scroll-linked Animation */
     const aboutSection = document.getElementById('about');
     const revealCircle = aboutSection ? aboutSection.querySelector('.about-bg-reveal') : null;
+    const playfulName = aboutSection ? aboutSection.querySelector('.playful-name') : null;
+    let nameDropPlayed = false;
 
     if (aboutSection && revealCircle) {
         window.addEventListener('scroll', () => {
@@ -513,6 +519,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (progress > 0.05) {
                 aboutSection.classList.add('text-active');
 
+                // One-time falling drop for the name once the section is comfortably in view
+                if (progress > 0.55 && !nameDropPlayed && playfulName) {
+                    nameDropPlayed = true;
+                    playfulName.classList.remove('drop-start');
+                    playfulName.classList.add('is-dropping');
+                    playfulName.addEventListener('animationend', () => {
+                        playfulName.classList.remove('is-dropping');
+                    }, { once: true });
+                }
+
                 // Active jumping effect based on progress and index
                 spans.forEach((span, index) => {
                     // Create a wave effect: each letter jumps based on scroll progress and its index
@@ -534,6 +550,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 spans.forEach(span => {
                     span.style.transform = ''; // Reset
                 });
+
+                // Reset drop if user scrolls far above (so it can play again on re-entry)
+                if (progress === 0 && playfulName) {
+                    nameDropPlayed = false;
+                    playfulName.classList.remove('is-dropping');
+                    playfulName.classList.add('drop-start');
+                }
 
                 // Hide text again if user scrolls way back up
                 const revealParagraphs = aboutSection.querySelectorAll('.about-text-reveal');
