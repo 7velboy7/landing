@@ -279,8 +279,10 @@
                         similar project</a>
                 </div>
                 <div class="case-image">
-                    <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop"
-                        alt="Fintech illustration">
+                    <div class="case-image-slider">
+                        <img src="images/IMG_0916.JPG" alt="KOOPERATIV Coworking Campaign Illustration">
+                        <img src="images/IMG_1146.JPG" alt="KOOPERATIV Coworking Campaign Detail">
+                    </div>
                 </div>
             </article>
 
@@ -458,14 +460,6 @@
                     <h3 data-i18n="process_step3_title">3. Refinement</h3>
                     <p data-i18n="process_step3_text">Detailed line work and color blocking. Two rounds of revisions
                         included.</p>
-                    <div class="brush-strokes-container">
-                        <div class="brush-stroke s1"></div>
-                        <div class="brush-stroke s2"></div>
-                        <div class="brush-stroke s3"></div>
-                        <div class="brush-stroke s4"></div>
-                        <div class="brush-stroke s5"></div>
-                        <div class="brush-stroke s6"></div>
-                    </div>
                 </div>
                 <!-- Step 4 -->
                 <div id="final-step" class="process-step" style="background: #000; color: #fff;">
@@ -775,6 +769,35 @@
             </filter>
         </defs>
     </svg>
+
+    <!-- AI Chat Widget -->
+    <div id="ai-chat-widget">
+        <button id="ai-chat-toggle" aria-label="Open AI Chat">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+        </button>
+        <div id="ai-chat-window" class="hidden">
+            <div class="chat-header">
+                <span class="chat-title">Alex.V AI Assistant</span>
+                <button id="ai-chat-close">&times;</button>
+            </div>
+            <div id="chat-messages">
+                <div class="message bot">
+                    Hey! I'm Alex's AI assistant. Ask me anything about his work, pricing, or process.
+                </div>
+            </div>
+            <form id="chat-input-form">
+                <input type="text" id="chat-input" placeholder="Type your question..." autocomplete="off">
+                <button type="submit">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13"></path>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script src="scripts.js"></script>

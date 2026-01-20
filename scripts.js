@@ -541,4 +541,82 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, { passive: true });
     }
+
+    /* 11. AI Chat Logic */
+    const chatToggle = document.getElementById('ai-chat-toggle');
+    const chatClose = document.getElementById('ai-chat-close');
+    const chatWindow = document.getElementById('ai-chat-window');
+    const chatForm = document.getElementById('chat-input-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+
+    if (chatToggle && chatWindow) {
+        chatToggle.addEventListener('click', () => {
+            chatWindow.classList.toggle('hidden');
+            chatToggle.classList.toggle('active');
+            if (!chatWindow.classList.contains('hidden')) {
+                chatInput.focus();
+            }
+        });
+
+        chatClose.addEventListener('click', () => {
+            chatWindow.classList.add('hidden');
+            chatToggle.classList.remove('active');
+        });
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            chatInput.value = '';
+
+            // Simulate bot thinking
+            setTimeout(() => {
+                const response = getBotResponse(message);
+                addMessage(response, 'bot');
+            }, 1000);
+        });
+    }
+
+    function addMessage(text, sender) {
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('message', sender);
+        msgDiv.textContent = text;
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getBotResponse(input) {
+        const text = input.toLowerCase();
+        const lang = localStorage.getItem('preferredLang') || 'en';
+
+        const responses = {
+            en: {
+                price: "Alex's projects usually start at $300 USD. This ensures high quality and dedicated time for each brief.",
+                services: "Alex offers Brand Illustration, Packaging Design, Book & Editorial Illustration, and Posters.",
+                process: "The process has 4 steps: Discovery, Concepts, Refinement, and Final Delivery. You can see more in the 'Process' section!",
+                contact: "You can reach Alex at itsme@alexvelboy.com or via the contact form on this page.",
+                default: "That's a great question! I'm just an AI assistant, but you can find more details in the sections above, or email Alex directly at itsme@alexvelboy.com."
+            },
+            ua: {
+                price: "Проекти Алекса зазвичай стартують від $300 USD. Це гарантує високу якість та присвячений час для кожного брифу.",
+                services: "Алекс пропонує брендову ілюстрацію, дизайн пакування, книжкову та журнальну ілюстрацію, а також постери.",
+                process: "Процес складається з 4 кроків: Дослідження, Концепти, Доопрацювання та Фінальна здача. Більше деталей у розділі 'Процес'!",
+                contact: "Ви можете написати Алексу на itsme@alexvelboy.com або заповнити форму зворотного зв'язку.",
+                default: "Гарне питання! Я лише AI-помічник, але ви можете знайти більше деталей у розділах вище або написати Алексу прямо на itsme@alexvelboy.com."
+            }
+        };
+
+        const current = responses[lang];
+
+        if (text.includes('price') || text.includes('cost') || text.includes('цін') || text.includes('варто')) return current.price;
+        if (text.includes('service') || text.includes('do') || text.includes('послуг') || text.includes('робиш')) return current.services;
+        if (text.includes('process') || text.includes('how') || text.includes('процес') || text.includes('як')) return current.process;
+        if (text.includes('contact') || text.includes('email') || text.includes('контакт') || text.includes('пошт')) return current.contact;
+
+        return current.default;
+    }
 });
