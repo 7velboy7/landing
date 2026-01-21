@@ -738,11 +738,11 @@
                 <!-- Right: Form -->
                 <div
                     style="background: #fff; padding: 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-hard);">
-                    <form id="contact-form">
+                    <form id="contact-form" action="https://formspree.io/f/xykkvjzp" method="POST">
                         <div style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;"
                             aria-hidden="true">
-                            <label for="contact-website">Website</label>
-                            <input type="text" name="website" id="contact-website" tabindex="-1" autocomplete="off">
+                            <label for="contact-gotcha">Website</label>
+                            <input type="text" name="_gotcha" id="contact-gotcha" tabindex="-1" autocomplete="off">
                         </div>
                         <div class="grid grid-2" style="gap: 1rem; margin-bottom: 1rem;">
                             <div class="form-group">
@@ -757,7 +757,7 @@
 
                         <div class="form-group">
                             <label class="form-label" data-i18n="form_project_type">Project Type</label>
-                            <select name="project_type" id="project_type_select" class="form-select">
+                            <select name="category" id="project_type_select" class="form-select">
                                 <option value="" data-i18n="form_category_placeholder">Select a category...</option>
                                 <option value="brand" data-i18n="form_brand">Brand Illustration</option>
                                 <option value="ed" data-i18n="form_ed">Editorial Illustration</option>
@@ -793,6 +793,10 @@
                         <p id="form-success" class="hidden"
                             style="margin-top: 1rem; font-weight: 700; color: #000;">
                             Thank you — your message has been sent.
+                        </p>
+                        <p id="form-error" class="hidden"
+                            style="margin-top: 0.75rem; font-weight: 700; color: #b00020;">
+                            Sorry — something went wrong. Please try again.
                         </p>
                     </form>
                 </div>

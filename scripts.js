@@ -394,10 +394,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitBtn = contactForm.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.textContent;
             const successMessage = contactForm.querySelector('#form-success');
-            const honeypot = contactForm.querySelector('input[name="website"]');
+            const errorMessage = contactForm.querySelector('#form-error');
+            const honeypot = contactForm.querySelector('input[name="_gotcha"]');
 
             if (successMessage) {
                 successMessage.classList.add('hidden');
+            }
+            if (errorMessage) {
+                errorMessage.classList.add('hidden');
             }
 
             if (honeypot && honeypot.value.trim()) {
@@ -409,14 +413,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Show loading state
-            submitBtn.textContent = "Sending...";
+            submitBtn.textContent = "SENDING...";
             submitBtn.disabled = true;
 
             const formData = new FormData(contactForm);
 
             try {
-                // Using FormSubmit as the backend service
-                const response = await fetch('https://formsubmit.co/ajax/itsme@alexvelboy.com', {
+                const response = await fetch(contactForm.action, {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -429,16 +432,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (successMessage) {
                         successMessage.classList.remove('hidden');
                     }
+                    console.log('Contact form submitted successfully.');
                 } else {
-                    const data = await response.json();
-                    if (Object.hasOwn(data, 'errors')) {
-                        alert(data["errors"].map(error => error["message"]).join(", "));
-                    } else {
-                        alert('Oops! There was a problem submitting your form. Please try again.');
+                    if (errorMessage) {
+                        errorMessage.classList.remove('hidden');
                     }
+                    console.error('Contact form submission failed.', await response.json().catch(() => ({})));
                 }
             } catch (error) {
-                alert('Oops! There was a problem submitting your form. Please try again.');
+                if (errorMessage) {
+                    errorMessage.classList.remove('hidden');
+                }
+                console.error('Contact form submission error.', error);
             } finally {
                 submitBtn.textContent = originalBtnText;
                 submitBtn.disabled = false;
