@@ -615,6 +615,16 @@ img {
     margin-bottom: 0.25rem;
 }
 
+.services-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.services-card-content {
+    margin: auto 0;
+}
+
 /* SERVICES BG */
 .bg-dark {
     background-color: var(--color-bg-dark);

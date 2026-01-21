@@ -281,6 +281,9 @@
                         <img src="images/IMG_0916.JPG" alt="KOOPERATIV Coworking Campaign Illustration">
                         <img src="images/IMG_1146.JPG" alt="KOOPERATIV Coworking Campaign Detail">
                         <img src="images/1.jpg" alt="KOOPERATIV Coworking Campaign Illustration">
+                        <img src="images/454546.jpg" alt="KOOPERATIV Coworking Campaign Illustration">
+                        <img src="images/143625-014362520030-Aa9y.jpg"
+                            alt="KOOPERATIV Coworking Campaign Illustration">
                     </div>
                 </div>
             </article>
@@ -396,39 +399,23 @@
                     </div>
                 </div>
 
-                <!-- Service List -->
-                <div
+                <!-- Single Card -->
+                <div class="services-card"
                     style="background: #111; padding: 2rem; border: 2px solid #333; border-radius: var(--radius-lg); box-shadow: var(--shadow-hard);">
-                    <h2 style="margin-bottom: 3rem;" data-i18n="services_title">Focus & Deliverables</h2>
-                    <ul style="border-top: 1px solid #333;">
-                        <li class="service-list-item">
-                            <span data-i18n="service_item1_title">Brand Illustration Systems</span>
-                            <span style="color: #666; font-size: 0.875rem;" data-i18n="service_item1_sub">Key visual +
-                                assets</span>
-                        </li>
-                        <li class="service-list-item">
-                            <span data-i18n="service_item2_title">Packaging & Physical Products</span>
-                            <span style="color: #666; font-size: 0.875rem;" data-i18n="service_item2_sub">Print-ready
-                                files</span>
-                        </li>
-                        <li class="service-list-item">
-                            <span data-i18n="service_item3_title">Book & Editorial Illustration</span>
-                            <span style="color: #666; font-size: 0.875rem;" data-i18n="service_item3_sub">concept +
-                                illustration</span>
-                        </li>
-                        <li class="service-list-item">
-                            <span data-i18n="service_item4_title">Animation Assets</span>
-                            <span style="color: #666; font-size: 0.875rem;" data-i18n="service_item4_sub">Layered
-                                Source</span>
-                        </li>
-                    </ul>
-                    <div style="margin-top: 2rem;">
-                        <p style="color: var(--color-primary); font-weight: 700; font-size: 1.25rem;"
-                            data-i18n="services_minimum_title">Project minimum:
-                            $300 USD</p>
-                        <p style="color: #666; font-size: 0.875rem;" data-i18n="services_minimum_sub">Ensures dedicated
-                            time and high-quality focus on
-                            your brief.</p>
+                    <div class="services-card-content">
+                        <h2 style="margin-bottom: 2rem;" data-i18n="services_card_title">I’m cool (professionally).</h2>
+                        <p style="color: #d6d6d6; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem;"
+                            data-i18n="services_card_p1">I art-direct the whole project. From concept to final files.
+                        </p>
+                        <p style="color: #d6d6d6; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem;"
+                            data-i18n="services_card_p2">I build the concept, define the visual direction, and lead it
+                            all the way through — your team can jump in for technical tweaks when needed.</p>
+                        <p style="color: #d6d6d6; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem;"
+                            data-i18n="services_card_p3">My job is to turn ideas into real, physical touchpoints that
+                            people notice, remember, and want to engage with.</p>
+                        <p style="color: #d6d6d6; font-size: 0.95rem; line-height: 1.6;"
+                            data-i18n="services_card_p4">Strong visuals don’t just look good — they improve attention,
+                            perception, and conversion across the funnel.</p>
                     </div>
                 </div>
             </div>
@@ -582,6 +569,7 @@
     <section class="section">
         <div class="container" style="max-width: 800px;">
             <h2 class="text-center" style="margin-bottom: 3rem;" data-i18n="faq_title">Common Questions</h2>
+            <audio id="faq-pop" src="audio/pop-402323.mp3" preload="auto"></audio>
 
             <div class="faq-accordion">
                 <details class="faq-item">
@@ -709,9 +697,8 @@
                         data-i18n="contact_label">Contact</span>
                     <h2 style="font-size: 3rem; margin-bottom: 2rem;" data-i18n="contact_title">Let's discuss your
                         project.</h2>
-                    <p style="font-size: 1.25rem; color: #888; margin-bottom: 3rem;" data-i18n="contact_sub">Currently
-                        accepting new commissions
-                        for Q4 2023. Fill out the form or send me a direct email.</p>
+                    <p style="font-size: 1.25rem; color: #888; margin-bottom: 3rem;" data-i18n="contact_sub">Open for
+                        selected commissions. Share a few details — I’ll respond with a clear plan.</p>
 
                     <div style="margin-bottom: 3rem;">
                         <a href="mailto:itsme@alexvelboy.com"
@@ -729,7 +716,7 @@
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
-                            Replies within 24-48 hours
+                            Response time: up to 24h (Mon–Fri)
                         </div>
                     </div>
 
@@ -752,6 +739,11 @@
                 <div
                     style="background: #fff; padding: 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-hard);">
                     <form id="contact-form">
+                        <div style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;"
+                            aria-hidden="true">
+                            <label for="contact-website">Website</label>
+                            <input type="text" name="website" id="contact-website" tabindex="-1" autocomplete="off">
+                        </div>
                         <div class="grid grid-2" style="gap: 1rem; margin-bottom: 1rem;">
                             <div class="form-group">
                                 <label class="form-label" data-i18n="form_name">Name</label>
@@ -798,6 +790,10 @@
                             data-i18n="form_submit">
                             Send Inquiry
                         </button>
+                        <p id="form-success" class="hidden"
+                            style="margin-top: 1rem; font-weight: 700; color: #000;">
+                            Thank you — your message has been sent.
+                        </p>
                     </form>
                 </div>
             </div>

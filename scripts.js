@@ -36,7 +36,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* 2. Smooth Scroll (Fallback for older browsers if needed, mostly handled by CSS) */
+    /* 2. FAQ Pop Sound */
+    const faqItems = document.querySelectorAll('.faq-accordion .faq-item');
+    const faqPop = document.getElementById('faq-pop');
+
+    if (faqItems.length && faqPop) {
+        faqItems.forEach(item => {
+            item.addEventListener('toggle', () => {
+                if (item.open) {
+                    faqPop.currentTime = 0.7;
+                    faqPop.play().catch(() => {});
+                }
+            });
+        });
+    }
+
+    /* 3. Smooth Scroll (Fallback for older browsers if needed, mostly handled by CSS) */
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -124,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             faq10_question: "Can we plan a long-term collaboration?",
             faq10_answer: "Yes — long-term projects are welcome once we align on the scope, timeline, and working rhythm. I can lead the visual direction as an art director throughout the collaboration.",
             contact_title: "Let's discuss your project.",
-            contact_sub: "Currently accepting new commissions for Q4 2023. Fill out the form or send me a direct email.",
+            contact_sub: "Open for selected commissions. Share a few details — I’ll respond with a clear plan.",
             services_list_title: "Services & Formats",
             service_item1_title: "Brand Illustration Systems",
             service_item1_sub: "Key visual + assets",
@@ -136,6 +151,11 @@ document.addEventListener('DOMContentLoaded', () => {
             service_item4_sub: "Layered Source",
             services_minimum_title: "Project minimum: $300 USD",
             services_minimum_sub: "Ensures dedicated time and high-quality focus on your brief.",
+            services_card_title: "I’m cool (professionally).",
+            services_card_p1: "I art-direct the whole project. From concept to final files.",
+            services_card_p2: "I build the concept, define the visual direction, and lead it all the way through — your team can jump in for technical tweaks when needed.",
+            services_card_p3: "My job is to turn ideas into real, physical touchpoints that people notice, remember, and want to engage with.",
+            services_card_p4: "Strong visuals don’t just look good — they improve attention, perception, and conversion across the funnel.",
             work_portfolio_cta: "View full portfolio",
             download_pdf: "Download PDF",
             usp_title: "Why clients choose to work with me",
@@ -228,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
             faq10_question: "Can we plan a long-term collaboration?",
             faq10_answer: "Yes — long-term projects are welcome once we align on the scope, timeline, and working rhythm. I can lead the visual direction as an art director throughout the collaboration.",
             contact_title: "Обговоримо ваш проект.",
-            contact_sub: "Зараз приймаю нові замовлення на Q4 2023. Заповніть форму або напишіть мені напряму.",
+            contact_sub: "Open for selected commissions. Share a few details — I’ll respond with a clear plan.",
             services_list_title: "Послуги та Формати",
             service_item1_title: "Системи ілюстрацій для брендів",
             service_item1_sub: "Ключовий візуал + активи",
@@ -240,6 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
             service_item4_sub: "Пошарові сорс-файли",
             services_minimum_title: "Мінімальне замовлення: $300 USD",
             services_minimum_sub: "Гарантує присвячений час та фокус на вашому брифi.",
+            services_card_title: "I’m cool (professionally).",
+            services_card_p1: "I art-direct the whole project. From concept to final files.",
+            services_card_p2: "I build the concept, define the visual direction, and lead it all the way through — your team can jump in for technical tweaks when needed.",
+            services_card_p3: "My job is to turn ideas into real, physical touchpoints that people notice, remember, and want to engage with.",
+            services_card_p4: "Strong visuals don’t just look good — they improve attention, perception, and conversion across the funnel.",
             work_portfolio_cta: "Дивитися повне портфоліо",
             download_pdf: "Завантажити PDF",
             usp_title: "Чому клієнти обирают роботу зі мною",
@@ -368,6 +393,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const submitBtn = contactForm.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.textContent;
+            const successMessage = contactForm.querySelector('#form-success');
+            const honeypot = contactForm.querySelector('input[name="website"]');
+
+            if (successMessage) {
+                successMessage.classList.add('hidden');
+            }
+
+            if (honeypot && honeypot.value.trim()) {
+                contactForm.reset();
+                if (successMessage) {
+                    successMessage.classList.remove('hidden');
+                }
+                return;
+            }
 
             // Show loading state
             submitBtn.textContent = "Sending...";
@@ -376,9 +415,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(contactForm);
 
             try {
-                // Using Formspree as the backend service
-                // The user will need to confirm the email on Formspree after the first submission
-                const response = await fetch('https://formspree.io/f/itsme@alexvelboy.com', {
+                // Using FormSubmit as the backend service
+                const response = await fetch('https://formsubmit.co/ajax/itsme@alexvelboy.com', {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -387,8 +425,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
-                    alert('Thank you! Your message has been sent successfully.');
                     contactForm.reset();
+                    if (successMessage) {
+                        successMessage.classList.remove('hidden');
+                    }
                 } else {
                     const data = await response.json();
                     if (Object.hasOwn(data, 'errors')) {
