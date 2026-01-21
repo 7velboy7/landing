@@ -36,23 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* 2. FAQ Accordion */
-    const faqTriggers = document.querySelectorAll('.faq-trigger');
-
-    faqTriggers.forEach(trigger => {
-        trigger.addEventListener('click', (e) => {
-            const item = trigger.closest('.faq-item');
-
-            // Optional: Close others
-            // document.querySelectorAll('.faq-item').forEach(i => {
-            //     if (i !== item) i.classList.remove('active');
-            // });
-
-            item.classList.toggle('active');
-        });
-    });
-
-    /* 3. Smooth Scroll (Fallback for older browsers if needed, mostly handled by CSS) */
+    /* 2. Smooth Scroll (Fallback for older browsers if needed, mostly handled by CSS) */
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -119,6 +103,26 @@ document.addEventListener('DOMContentLoaded', () => {
             about_sub_3: "My superpower is absurd thinking with precision: I take a brief, find the weird truth inside it, and push it until the concept clicks hard — visually, emotionally, and strategically.",
             about_sub_4: "Human detail, because I'm not a PDF: I've wanted to be an artist since I was a kid. Somehow it worked out — and now my favorite part is taking wild concepts and turning them into something real: campaigns, spaces, covers, murals, installations, an object you can touch and visuals you can actually live with.",
             faq_title: "Common Questions",
+            faq1_question: "How long does a project usually take?",
+            faq1_answer: "Small projects (e.g., one illustration) typically take about one week. Bigger projects usually take 2–4 weeks, depending on scope.",
+            faq2_question: "How many concepts do you provide?",
+            faq2_answer: "At the start, we align on the idea and I deliver two fully developed concept sketches. Each concept comes with its own story, meaning, and visual logic.",
+            faq3_question: "How many revision rounds are included?",
+            faq3_answer: "We lock the direction at the sketch/concept stage, then I refine it with your feedback while keeping the overall vision consistent. Small tweaks and clarifications are included (up to ~10), but the final artistic direction stays with me.",
+            faq4_question: "Do you deliver source files?",
+            faq4_answer: "Yes — I provide the files you need for your use case, including print-ready and high-resolution digital versions. Source files can be included when required and agreed in advance.",
+            faq5_question: "What does your process look like, step by step?",
+            faq5_answer: "We start with a call to explore the idea, goals, and best execution options, then sign a contract. If it’s a physical space, I visit (or work from materials), build a plan, share the initial vision, and then deliver final files.",
+            faq6_question: "How does pricing and payment work (deposit, milestones)?",
+            faq6_answer: "I work with a 50% deposit for projects of any size. Payment terms are clearly stated in the contract we sign before starting.",
+            faq7_question: "Do you take rush projects?",
+            faq7_answer: "Yes, rush projects are possible depending on my schedule. Timeline and rush fee are discussed individually.",
+            faq8_question: "What do you need from me to get started?",
+            faq8_answer: "A quick conversation about what you have and what you want to achieve, plus access to your materials or space (if applicable). After that, I take the lead and handle the process.",
+            faq9_question: "Can we work together if my business is in another country?",
+            faq9_answer: "Absolutely — I work internationally and we can run everything via calls, messages, and mockups. For physical applications, I prepare clear production-ready files and guides tailored to your format.",
+            faq10_question: "Can we plan a long-term collaboration?",
+            faq10_answer: "Yes — long-term projects are welcome once we align on the scope, timeline, and working rhythm. I can lead the visual direction as an art director throughout the collaboration.",
             contact_title: "Let's discuss your project.",
             contact_sub: "Currently accepting new commissions for Q4 2023. Fill out the form or send me a direct email.",
             services_list_title: "Services & Formats",
@@ -203,6 +207,26 @@ document.addEventListener('DOMContentLoaded', () => {
             about_sub_3: "My superpower is absurd thinking with precision: I take a brief, find the weird truth inside it, and push it until the concept clicks hard — visually, emotionally, and strategically.",
             about_sub_4: "Human detail, because I'm not a PDF: I've wanted to be an artist since I was a kid. Somehow it worked out — and now my favorite part is taking wild concepts and turning them into something real: campaigns, spaces, covers, murals, installations, an object you can touch and visuals you can actually live with.",
             faq_title: "Часті запитання",
+            faq1_question: "How long does a project usually take?",
+            faq1_answer: "Small projects (e.g., one illustration) typically take about one week. Bigger projects usually take 2–4 weeks, depending on scope.",
+            faq2_question: "How many concepts do you provide?",
+            faq2_answer: "At the start, we align on the idea and I deliver two fully developed concept sketches. Each concept comes with its own story, meaning, and visual logic.",
+            faq3_question: "How many revision rounds are included?",
+            faq3_answer: "We lock the direction at the sketch/concept stage, then I refine it with your feedback while keeping the overall vision consistent. Small tweaks and clarifications are included (up to ~10), but the final artistic direction stays with me.",
+            faq4_question: "Do you deliver source files?",
+            faq4_answer: "Yes — I provide the files you need for your use case, including print-ready and high-resolution digital versions. Source files can be included when required and agreed in advance.",
+            faq5_question: "What does your process look like, step by step?",
+            faq5_answer: "We start with a call to explore the idea, goals, and best execution options, then sign a contract. If it’s a physical space, I visit (or work from materials), build a plan, share the initial vision, and then deliver final files.",
+            faq6_question: "How does pricing and payment work (deposit, milestones)?",
+            faq6_answer: "I work with a 50% deposit for projects of any size. Payment terms are clearly stated in the contract we sign before starting.",
+            faq7_question: "Do you take rush projects?",
+            faq7_answer: "Yes, rush projects are possible depending on my schedule. Timeline and rush fee are discussed individually.",
+            faq8_question: "What do you need from me to get started?",
+            faq8_answer: "A quick conversation about what you have and what you want to achieve, plus access to your materials or space (if applicable). After that, I take the lead and handle the process.",
+            faq9_question: "Can we work together if my business is in another country?",
+            faq9_answer: "Absolutely — I work internationally and we can run everything via calls, messages, and mockups. For physical applications, I prepare clear production-ready files and guides tailored to your format.",
+            faq10_question: "Can we plan a long-term collaboration?",
+            faq10_answer: "Yes — long-term projects are welcome once we align on the scope, timeline, and working rhythm. I can lead the visual direction as an art director throughout the collaboration.",
             contact_title: "Обговоримо ваш проект.",
             contact_sub: "Зараз приймаю нові замовлення на Q4 2023. Заповніть форму або напишіть мені напряму.",
             services_list_title: "Послуги та Формати",

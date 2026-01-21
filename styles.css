@@ -816,21 +816,41 @@ body.fx-active #lightning-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    list-style: none;
+}
+
+.faq-trigger::-webkit-details-marker {
+    display: none;
+}
+
+.faq-trigger::marker {
+    content: "";
+}
+
+.faq-trigger svg {
+    transition: transform 0.35s ease;
 }
 
 .faq-content {
-    display: none;
-    padding: 0 1.5rem 1.5rem;
-    border-top: 2px solid #000;
-    background: #fff0f0;
-    /* Slight red tint for content background */
-}
-
-.faq-item.active .faq-content {
     display: block;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 1.5rem;
+    border-top: 2px solid #000;
+    background: #fff;
+    opacity: 0;
+    transition: max-height 0.35s ease, padding 0.35s ease, opacity 0.35s ease;
 }
 
-.faq-item.active .faq-trigger svg {
+.faq-item[open] .faq-content {
+    max-height: 800px;
+    padding: 1rem 1.5rem 1.5rem;
+    background: var(--color-primary);
+    color: #000;
+    opacity: 1;
+}
+
+.faq-item[open] .faq-trigger svg {
     transform: rotate(180deg);
 }
 
