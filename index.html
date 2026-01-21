@@ -757,7 +757,7 @@
 
                         <div class="form-group">
                             <label class="form-label" data-i18n="form_project_type">Project Type</label>
-                            <select name="category" id="project_type_select" class="form-select">
+                            <select name="projectType" id="project_type_select" class="form-select">
                                 <option value="" data-i18n="form_category_placeholder">Select a category...</option>
                                 <option value="brand" data-i18n="form_brand">Brand Illustration</option>
                                 <option value="ed" data-i18n="form_ed">Editorial Illustration</option>
@@ -783,7 +783,7 @@
                         <div class="form-group">
                             <label class="form-label" data-i18n="form_details">Project Details</label>
                             <textarea name="message" rows="4" class="form-textarea" data-i18n="form_details_placeholder"
-                                placeholder="Briefly describe what you need..."></textarea>
+                                placeholder="Briefly describe what you need..." required></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primary" style="width: 100%; box-shadow: none;"
@@ -792,7 +792,7 @@
                         </button>
                         <p id="form-success" class="hidden"
                             style="margin-top: 1rem; font-weight: 700; color: #000;">
-                            Thank you — your message has been sent.
+                            Message delivered. I’ll reply within 24h.
                         </p>
                         <p id="form-error" class="hidden"
                             style="margin-top: 0.75rem; font-weight: 700; color: #b00020;">
