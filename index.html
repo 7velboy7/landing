@@ -738,11 +738,11 @@
                 <!-- Right: Form -->
                 <div
                     style="background: #fff; padding: 2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-hard);">
-                    <form id="contact-form" action="https://formspree.io/f/xykkvjzp" method="POST">
+                    <form id="contact-form" action="/api/contact" method="POST">
                         <div style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;"
                             aria-hidden="true">
-                            <label for="contact-gotcha">Website</label>
-                            <input type="text" name="_gotcha" id="contact-gotcha" tabindex="-1" autocomplete="off">
+                            <label for="contact-website">Website</label>
+                            <input type="text" name="website" id="contact-website" tabindex="-1" autocomplete="off">
                         </div>
                         <div class="grid grid-2" style="gap: 1rem; margin-bottom: 1rem;">
                             <div class="form-group">
@@ -792,11 +792,11 @@
                         </button>
                         <p id="form-success" class="hidden"
                             style="margin-top: 1rem; font-weight: 700; color: #000;">
-                            Message delivered. I’ll reply within 24h.
+                            ✅ Sent
                         </p>
                         <p id="form-error" class="hidden"
                             style="margin-top: 0.75rem; font-weight: 700; color: #b00020;">
-                            Sorry — something went wrong. Please try again.
+                            ❌ Error
                         </p>
                     </form>
                 </div>

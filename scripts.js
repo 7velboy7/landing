@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const originalBtnText = submitBtn.textContent;
             const successMessage = contactForm.querySelector('#form-success');
             const errorMessage = contactForm.querySelector('#form-error');
-            const honeypot = contactForm.querySelector('input[name="_gotcha"]');
+            const honeypot = contactForm.querySelector('input[name="website"]');
 
             if (successMessage) {
                 successMessage.classList.add('hidden');
@@ -413,34 +413,48 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Show loading state
-            submitBtn.textContent = "SENDING...";
+            submitBtn.textContent = "Sending...";
             submitBtn.disabled = true;
 
             const formData = new FormData(contactForm);
+            const payload = {
+                name: (formData.get('name') || '').toString().trim(),
+                email: (formData.get('email') || '').toString().trim(),
+                message: (formData.get('message') || '').toString().trim(),
+                website: (formData.get('website') || '').toString().trim(),
+                projectType: (formData.get('projectType') || '').toString().trim(),
+                budget: (formData.get('budget') || '').toString().trim()
+            };
 
             try {
-                const response = await fetch(contactForm.action, {
+                const response = await fetch('/api/contact', {
                     method: 'POST',
-                    body: formData,
                     headers: {
+                        'Content-Type': 'application/json',
                         'Accept': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify(payload)
                 });
 
-                if (response.ok) {
+                const result = await response.json().catch(() => ({}));
+
+                if (response.ok && result.ok) {
                     contactForm.reset();
                     if (successMessage) {
+                        successMessage.textContent = "✅ Sent";
                         successMessage.classList.remove('hidden');
                     }
                     console.log('Contact form submitted successfully.');
                 } else {
                     if (errorMessage) {
+                        errorMessage.textContent = result.error ? `❌ Error: ${result.error}` : "❌ Error";
                         errorMessage.classList.remove('hidden');
                     }
-                    console.error('Contact form submission failed.', await response.json().catch(() => ({})));
+                    console.error('Contact form submission failed.', result);
                 }
             } catch (error) {
                 if (errorMessage) {
+                    errorMessage.textContent = "❌ Error";
                     errorMessage.classList.remove('hidden');
                 }
                 console.error('Contact form submission error.', error);
