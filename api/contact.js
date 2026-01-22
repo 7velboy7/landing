@@ -1,4 +1,5 @@
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
+const DEPLOY_MARKER = 'v1.0.0';
 
 const isValidEmail = (email) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
 
@@ -14,7 +15,29 @@ const parseBody = (body) => {
     return body;
 };
 
+const buildAdminText = ({ name, email, message, projectType, budget, timestamp, userAgent }) => ([
+    'New inquiry from alexvelboy.com',
+    '',
+    `Name: ${name || 'Not provided'}`,
+    `Email: ${email}`,
+    `Project Type: ${projectType || 'Not provided'}`,
+    `Budget: ${budget || 'Not provided'}`,
+    '',
+    'Message:',
+    message,
+    '',
+    `Timestamp: ${timestamp}`,
+    `User Agent: ${userAgent}`
+].join('\n'));
+
 module.exports = async (req, res) => {
+    console.log('CONTACT API DEPLOY MARKER:', DEPLOY_MARKER, new Date().toISOString());
+
+    if (req.method === 'GET') {
+        res.status(200).json({ ok: true, marker: DEPLOY_MARKER });
+        return;
+    }
+
     if (req.method !== 'POST') {
         res.status(405).json({ ok: false, error: 'Method not allowed.' });
         return;
@@ -33,8 +56,8 @@ module.exports = async (req, res) => {
         return;
     }
 
-    if (!email || !message) {
-        res.status(400).json({ ok: false, error: 'Email and message are required.' });
+    if (!name || !email || !message) {
+        res.status(400).json({ ok: false, error: 'Name, email, and message are required.' });
         return;
     }
 
@@ -48,6 +71,7 @@ module.exports = async (req, res) => {
     const fromEmail = process.env.CONTACT_FROM_EMAIL;
 
     if (!apiKey || !toEmail || !fromEmail) {
+        console.error('Missing RESEND_API_KEY/CONTACT_TO_EMAIL/CONTACT_FROM_EMAIL.');
         res.status(500).json({ ok: false, error: 'Server email configuration is missing.' });
         return;
     }
@@ -55,27 +79,21 @@ module.exports = async (req, res) => {
     const identifier = name || email;
     const timestamp = new Date().toISOString();
     const userAgent = req.headers['user-agent'] || 'unknown';
-
-    const adminText = [
-        'New inquiry from alexvelboy.com',
-        '',
-        `Name: ${name || 'Not provided'}`,
-        `Email: ${email}`,
-        `Project Type: ${projectType || 'Not provided'}`,
-        `Budget: ${budget || 'Not provided'}`,
-        '',
-        'Message:',
+    const adminText = buildAdminText({
+        name,
+        email,
         message,
-        '',
-        `Timestamp: ${timestamp}`,
-        `User Agent: ${userAgent}`
-    ].join('\n');
+        projectType,
+        budget,
+        timestamp,
+        userAgent
+    });
 
-    const sendEmail = async (payload) => {
+    const sendEmail = async (payload, label) => {
         const response = await fetch(RESEND_ENDPOINT, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
+                Authorization: `Bearer ${apiKey}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
@@ -83,6 +101,7 @@ module.exports = async (req, res) => {
 
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
+            console.error(`Resend ${label} error.`, { status: response.status, data });
             throw new Error(data.message || 'Resend error');
         }
         return data;
@@ -95,17 +114,24 @@ module.exports = async (req, res) => {
             subject: `New message from alexvelboy.com — ${identifier}`,
             reply_to: email,
             text: adminText
-        });
+        }, 'admin');
 
+        let receiptError = null;
         try {
             await sendEmail({
                 from: fromEmail,
                 to: email,
                 subject: 'We received your message — Alex Velboy',
                 text: 'Thanks for reaching out — your message has been delivered successfully.\nI’ll get back to you as soon as possible.\n— Alex Velboy (alexvelboy.com)'
-            });
+            }, 'receipt');
         } catch (error) {
-            console.error('Resend auto-reply failed.', error);
+            receiptError = error;
+            console.warn('Resend auto-reply failed.', error);
+        }
+
+        if (receiptError) {
+            res.status(502).json({ ok: false, error: 'Auto-reply failed.' });
+            return;
         }
 
         res.status(200).json({ ok: true });

@@ -413,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Show loading state
-            submitBtn.textContent = "Sending...";
+            submitBtn.textContent = "Sending…";
             submitBtn.disabled = true;
 
             const formData = new FormData(contactForm);
@@ -438,24 +438,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const result = await response.json().catch(() => ({}));
 
-                if (response.ok && result.ok) {
+                if (response.ok && result.ok === true) {
                     contactForm.reset();
                     if (successMessage) {
-                        successMessage.textContent = "✅ Sent";
+                        successMessage.textContent = "Sent ✅";
                         successMessage.classList.remove('hidden');
+                    }
+                    if (errorMessage) {
+                        errorMessage.classList.add('hidden');
                     }
                     console.log('Contact form submitted successfully.');
                 } else {
                     if (errorMessage) {
-                        errorMessage.textContent = result.error ? `❌ Error: ${result.error}` : "❌ Error";
+                        errorMessage.textContent = result.error ? `Error ❌ ${result.error}` : "Error ❌";
                         errorMessage.classList.remove('hidden');
+                    }
+                    if (successMessage) {
+                        successMessage.classList.add('hidden');
                     }
                     console.error('Contact form submission failed.', result);
                 }
             } catch (error) {
                 if (errorMessage) {
-                    errorMessage.textContent = "❌ Error";
+                    errorMessage.textContent = "Error ❌";
                     errorMessage.classList.remove('hidden');
+                }
+                if (successMessage) {
+                    successMessage.classList.add('hidden');
                 }
                 console.error('Contact form submission error.', error);
             } finally {
