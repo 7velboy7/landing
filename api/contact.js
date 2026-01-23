@@ -1,5 +1,5 @@
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
-const DEPLOY_MARKER = 'v1.0.0';
+const DEPLOY_MARKER = 'v1.0.1';
 
 const isValidEmail = (email) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
 
@@ -102,13 +102,38 @@ module.exports = async (req, res) => {
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
             console.error(`Resend ${label} error.`, { status: response.status, data });
-            throw new Error(data.message || 'Resend error');
         }
-        return data;
+        return { ok: response.ok, status: response.status, data };
+    };
+
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const sendReceiptWithRetry = async () => {
+        let result = await sendEmail({
+            from: fromEmail,
+            to: email,
+            subject: 'We received your message — Alex Velboy',
+            text: 'Thanks for reaching out — your message has been delivered successfully.\nI’ll get back to you as soon as possible.\n— Alex Velboy (alexvelboy.com)'
+        }, 'receipt');
+
+        if (result.ok) {
+            return { ok: true };
+        }
+
+        if (result.status === 429) {
+            await delay(700);
+            result = await sendEmail({
+                from: fromEmail,
+                to: email,
+                subject: 'We received your message — Alex Velboy',
+                text: 'Thanks for reaching out — your message has been delivered successfully.\nI’ll get back to you as soon as possible.\n— Alex Velboy (alexvelboy.com)'
+            }, 'receipt_retry');
+        }
+
+        return { ok: result.ok, error: result.data?.message || 'Auto-reply failed.' };
     };
 
     try {
-        await sendEmail({
+        const adminResult = await sendEmail({
             from: fromEmail,
             to: toEmail,
             subject: `New message from alexvelboy.com — ${identifier}`,
@@ -116,25 +141,18 @@ module.exports = async (req, res) => {
             text: adminText
         }, 'admin');
 
-        let receiptError = null;
-        try {
-            await sendEmail({
-                from: fromEmail,
-                to: email,
-                subject: 'We received your message — Alex Velboy',
-                text: 'Thanks for reaching out — your message has been delivered successfully.\nI’ll get back to you as soon as possible.\n— Alex Velboy (alexvelboy.com)'
-            }, 'receipt');
-        } catch (error) {
-            receiptError = error;
-            console.warn('Resend auto-reply failed.', error);
-        }
-
-        if (receiptError) {
-            res.status(502).json({ ok: false, error: 'Auto-reply failed.' });
+        if (!adminResult.ok) {
+            res.status(502).json({ ok: false, error: adminResult.data?.message || 'Failed to send message.' });
             return;
         }
 
-        res.status(200).json({ ok: true });
+        const receiptResult = await sendReceiptWithRetry();
+
+        if (!receiptResult.ok) {
+            console.warn('Resend auto-reply failed.', receiptResult.error);
+        }
+
+        res.status(200).json({ ok: true, receipt_ok: receiptResult.ok });
     } catch (error) {
         console.error('Resend admin email failed.', error);
         res.status(500).json({ ok: false, error: 'Failed to send message.' });

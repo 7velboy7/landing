@@ -388,9 +388,16 @@ document.addEventListener('DOMContentLoaded', () => {
     /* 6. Form Submission Logic */
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
+        let isSubmitting = false;
+
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            if (isSubmitting) {
+                return;
+            }
+
+            isSubmitting = true;
             const submitBtn = contactForm.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.textContent;
             const successMessage = contactForm.querySelector('#form-success');
@@ -470,6 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } finally {
                 submitBtn.textContent = originalBtnText;
                 submitBtn.disabled = false;
+                isSubmitting = false;
             }
         });
     }
