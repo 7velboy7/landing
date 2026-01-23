@@ -490,7 +490,91 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* 7. Audio Playback Logic (Final Step - Lightning) */
+    /* 7. Kooperativ Sliders */
+    const kooperativSlider = document.getElementById('kooperativ-slider');
+    if (kooperativSlider && kooperativSlider.dataset.dragInit !== '1') {
+        kooperativSlider.dataset.dragInit = '1';
+
+        const cards = Array.from(kooperativSlider.querySelectorAll('.kooperativ-card'));
+        const carousels = Array.from(kooperativSlider.querySelectorAll('.kooperativ-image-carousel'));
+        const firstCard = cards[0];
+        let cardWidth = firstCard ? firstCard.getBoundingClientRect().width : kooperativSlider.clientWidth;
+
+        const updateCardWidth = () => {
+            cardWidth = firstCard ? firstCard.getBoundingClientRect().width : kooperativSlider.clientWidth;
+        };
+
+        let isDragging = false;
+        let startX = 0;
+        let startScrollLeft = 0;
+        let rafId = null;
+        let moved = false;
+
+        const onPointerDown = (event) => {
+            if (event.button !== undefined && event.button !== 0) return;
+            if (event.target.closest('.kooperativ-image-carousel')) return;
+            isDragging = true;
+            moved = false;
+            startX = event.clientX;
+            startScrollLeft = kooperativSlider.scrollLeft;
+            kooperativSlider.classList.add('is-dragging');
+            kooperativSlider.setPointerCapture(event.pointerId);
+        };
+
+        const onPointerMove = (event) => {
+            if (!isDragging) return;
+            const dx = event.clientX - startX;
+            if (Math.abs(dx) > 6) moved = true;
+            if (rafId) return;
+            rafId = requestAnimationFrame(() => {
+                rafId = null;
+                kooperativSlider.scrollLeft = startScrollLeft - dx;
+            });
+        };
+
+        const snapToNearest = () => {
+            if (!cardWidth) return;
+            const targetIndex = Math.round(kooperativSlider.scrollLeft / cardWidth);
+            kooperativSlider.scrollTo({
+                left: targetIndex * cardWidth,
+                behavior: 'smooth'
+            });
+        };
+
+        const onPointerUp = (event) => {
+            if (!isDragging) return;
+            isDragging = false;
+            kooperativSlider.classList.remove('is-dragging');
+            if (event.pointerId !== undefined) {
+                kooperativSlider.releasePointerCapture(event.pointerId);
+            }
+            snapToNearest();
+        };
+
+        const moveEvent = 'onpointerrawupdate' in window ? 'pointerrawupdate' : 'pointermove';
+        kooperativSlider.addEventListener('pointerdown', onPointerDown);
+        kooperativSlider.addEventListener(moveEvent, onPointerMove);
+        kooperativSlider.addEventListener('pointerup', onPointerUp);
+        kooperativSlider.addEventListener('pointercancel', onPointerUp);
+        kooperativSlider.addEventListener('lostpointercapture', onPointerUp);
+
+        kooperativSlider.addEventListener('click', (event) => {
+            if (moved) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }, true);
+
+        carousels.forEach((carousel) => {
+            carousel.addEventListener('pointerdown', (event) => {
+                event.stopPropagation();
+            });
+        });
+
+        window.addEventListener('resize', updateCardWidth);
+    }
+
+    /* 8. Audio Playback Logic (Final Step - Lightning) */
     const finalStep = document.getElementById('final-step');
     const alarmAudio = document.getElementById('alarm-audio');
     const lightningVideos = document.querySelectorAll('.lightning-video');
