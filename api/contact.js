@@ -1,5 +1,5 @@
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
-const DEPLOY_MARKER = 'v1.0.1';
+const DEPLOY_MARKER = 'v1.0.2';
 
 const isValidEmail = (email) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
 
@@ -15,8 +15,9 @@ const parseBody = (body) => {
     return body;
 };
 
-const buildAdminText = ({ name, email, message, projectType, budget, timestamp, userAgent }) => ([
+const buildAdminText = ({ name, email, message, projectType, budget, timestamp, userAgent, requestId }) => ([
     'New inquiry from alexvelboy.com',
+    `Request ID: ${requestId}`,
     '',
     `Name: ${name || 'Not provided'}`,
     `Email: ${email}`,
@@ -31,7 +32,8 @@ const buildAdminText = ({ name, email, message, projectType, budget, timestamp, 
 ].join('\n'));
 
 module.exports = async (req, res) => {
-    console.log('CONTACT API DEPLOY MARKER:', DEPLOY_MARKER, new Date().toISOString());
+    const requestId = Math.random().toString(36).slice(2, 8);
+    console.log('CONTACT API DEPLOY MARKER:', DEPLOY_MARKER, new Date().toISOString(), `req:${requestId}`);
 
     if (req.method === 'GET') {
         res.status(200).json({ ok: true, marker: DEPLOY_MARKER });
@@ -86,7 +88,8 @@ module.exports = async (req, res) => {
         projectType,
         budget,
         timestamp,
-        userAgent
+        userAgent,
+        requestId
     });
 
     const sendEmail = async (payload, label) => {
@@ -101,42 +104,24 @@ module.exports = async (req, res) => {
 
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
-            console.error(`Resend ${label} error.`, { status: response.status, data });
+            console.error(`Resend ${label} error.`, { status: response.status, data, requestId });
         }
         return { ok: response.ok, status: response.status, data };
     };
 
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    const sendReceiptWithRetry = async () => {
-        let result = await sendEmail({
-            from: fromEmail,
-            to: email,
-            subject: 'We received your message — Alex Velboy',
-            text: 'Thanks for reaching out — your message has been delivered successfully.\nI’ll get back to you as soon as possible.\n— Alex Velboy (alexvelboy.com)'
-        }, 'receipt');
-
-        if (result.ok) {
-            return { ok: true };
-        }
-
-        if (result.status === 429) {
-            await delay(700);
-            result = await sendEmail({
-                from: fromEmail,
-                to: email,
-                subject: 'We received your message — Alex Velboy',
-                text: 'Thanks for reaching out — your message has been delivered successfully.\nI’ll get back to you as soon as possible.\n— Alex Velboy (alexvelboy.com)'
-            }, 'receipt_retry');
-        }
-
-        return { ok: result.ok, error: result.data?.message || 'Auto-reply failed.' };
+    const receiptPayload = {
+        from: fromEmail,
+        to: email,
+        subject: 'We received your message — Alex Velboy',
+        text: 'Thanks for reaching out — your message has been delivered successfully.\nI’ll get back to you as soon as possible.\n— Alex Velboy (alexvelboy.com)'
     };
 
     try {
         const adminResult = await sendEmail({
             from: fromEmail,
             to: toEmail,
-            subject: `New message from alexvelboy.com — ${identifier}`,
+            subject: `[req:${requestId}] New message from alexvelboy.com — ${identifier}`,
             reply_to: email,
             text: adminText
         }, 'admin');
@@ -146,15 +131,25 @@ module.exports = async (req, res) => {
             return;
         }
 
-        const receiptResult = await sendReceiptWithRetry();
+        await delay(700);
+        let receiptResult = await sendEmail(receiptPayload, 'receipt');
 
-        if (!receiptResult.ok) {
-            console.warn('Resend auto-reply failed.', receiptResult.error);
+        if (!receiptResult.ok && receiptResult.status === 429) {
+            await delay(1000);
+            receiptResult = await sendEmail(receiptPayload, 'receipt_retry');
         }
 
-        res.status(200).json({ ok: true, receipt_ok: receiptResult.ok });
+        if (!receiptResult.ok) {
+            console.warn('Resend auto-reply failed.', {
+                error: receiptResult.data?.message || 'Auto-reply failed.',
+                status: receiptResult.status,
+                requestId
+            });
+        }
+
+        res.status(200).json({ ok: true, receipt_ok: Boolean(receiptResult.ok) });
     } catch (error) {
-        console.error('Resend admin email failed.', error);
+        console.error('Resend admin email failed.', { error, requestId });
         res.status(500).json({ ok: false, error: 'Failed to send message.' });
     }
 };

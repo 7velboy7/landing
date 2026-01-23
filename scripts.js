@@ -414,8 +414,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (honeypot && honeypot.value.trim()) {
                 contactForm.reset();
                 if (successMessage) {
+                    successMessage.textContent = "Sent ✅";
                     successMessage.classList.remove('hidden');
                 }
+                if (errorMessage) {
+                    errorMessage.classList.add('hidden');
+                }
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+                isSubmitting = false;
                 return;
             }
 
@@ -448,7 +455,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok && result.ok === true) {
                     contactForm.reset();
                     if (successMessage) {
-                        successMessage.textContent = "Sent ✅";
+                        const receiptNote = result.receipt_ok === false ? " (receipt pending)" : "";
+                        successMessage.textContent = `Sent ✅${receiptNote}`;
                         successMessage.classList.remove('hidden');
                     }
                     if (errorMessage) {
