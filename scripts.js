@@ -1,6 +1,19 @@
 /* Scripts for interactivity */
 
 document.addEventListener('DOMContentLoaded', () => {
+    if (!document.body.dataset.ctaScrollInit) {
+        document.body.dataset.ctaScrollInit = '1';
+        document.addEventListener('click', (event) => {
+            const link = event.target.closest('a.cta-discuss, button.cta-discuss');
+            if (!link) return;
+            const selector = link.getAttribute('href') || link.dataset.scrollTo;
+            if (!selector || !selector.startsWith('#')) return;
+            const target = document.querySelector(selector);
+            if (!target) return;
+            event.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, true);
+    }
 
     /* 1. Mobile Menu Toggle */
     const menuBtn = document.getElementById('menu-toggle');
@@ -497,6 +510,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const cards = Array.from(kooperativSlider.querySelectorAll('.kooperativ-card'));
         const carousels = Array.from(kooperativSlider.querySelectorAll('.kooperativ-image-carousel'));
+        const dotsContainer = document.querySelector('section[data-slider="kooperativ"] .slider-dots');
+        const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.dot')) : [];
         const firstCard = cards[0];
         let cardWidth = firstCard ? firstCard.getBoundingClientRect().width : kooperativSlider.clientWidth;
 
@@ -505,15 +520,37 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         let isDragging = false;
+        let dragActive = false;
         let startX = 0;
         let startScrollLeft = 0;
         let rafId = null;
         let moved = false;
+        let scrollRaf = null;
+
+        const updateDots = (index) => {
+            if (!dots.length) return;
+            dots.forEach((dot, idx) => {
+                const isActive = idx === index;
+                dot.classList.toggle('is-active', isActive);
+                if (isActive) {
+                    dot.setAttribute('aria-current', 'true');
+                } else {
+                    dot.removeAttribute('aria-current');
+                }
+            });
+        };
+
+        const getActiveIndex = () => {
+            if (!cardWidth) return 0;
+            return Math.round(kooperativSlider.scrollLeft / cardWidth);
+        };
 
         const onPointerDown = (event) => {
             if (event.button !== undefined && event.button !== 0) return;
             if (event.target.closest('.kooperativ-image-carousel')) return;
+            if (event.target.closest('a, button, input, textarea, select, label, .cta-discuss')) return;
             isDragging = true;
+            dragActive = false;
             moved = false;
             startX = event.clientX;
             startScrollLeft = kooperativSlider.scrollLeft;
@@ -524,7 +561,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const onPointerMove = (event) => {
             if (!isDragging) return;
             const dx = event.clientX - startX;
-            if (Math.abs(dx) > 6) moved = true;
+            if (Math.abs(dx) > 8) {
+                moved = true;
+                dragActive = true;
+            }
+            if (!dragActive) return;
             if (rafId) return;
             rafId = requestAnimationFrame(() => {
                 rafId = null;
@@ -544,6 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const onPointerUp = (event) => {
             if (!isDragging) return;
             isDragging = false;
+            dragActive = false;
             kooperativSlider.classList.remove('is-dragging');
             if (event.pointerId !== undefined) {
                 kooperativSlider.releasePointerCapture(event.pointerId);
@@ -559,11 +601,32 @@ document.addEventListener('DOMContentLoaded', () => {
         kooperativSlider.addEventListener('lostpointercapture', onPointerUp);
 
         kooperativSlider.addEventListener('click', (event) => {
-            if (moved) {
+            if (!moved) return;
+            if (event.target.closest('a, button, input, textarea, select, label')) return;
+            if (event.target.closest('.cta-discuss')) return;
+            {
                 event.preventDefault();
                 event.stopPropagation();
             }
         }, true);
+
+        kooperativSlider.addEventListener('scroll', () => {
+            if (scrollRaf) return;
+            scrollRaf = requestAnimationFrame(() => {
+                scrollRaf = null;
+                updateDots(getActiveIndex());
+            });
+        }, { passive: true });
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                kooperativSlider.scrollTo({
+                    left: index * cardWidth,
+                    behavior: 'smooth'
+                });
+                updateDots(index);
+            });
+        });
 
         carousels.forEach((carousel) => {
             carousel.addEventListener('pointerdown', (event) => {
@@ -572,6 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         window.addEventListener('resize', updateCardWidth);
+        updateDots(getActiveIndex());
     }
 
     /* 8. Audio Playback Logic (Final Step - Lightning) */
