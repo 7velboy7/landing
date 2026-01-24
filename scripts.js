@@ -15,6 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }, true);
     }
 
+    const topSliderDotsSlot = document.getElementById('top-slider-dots-slot');
+    const topSliderWrapper = document.getElementById('top-slider');
+    if (topSliderDotsSlot && topSliderWrapper) {
+        const topDots = topSliderWrapper.querySelector('.top-slider-dots');
+        if (topDots && !topSliderDotsSlot.contains(topDots)) {
+            topSliderDotsSlot.innerHTML = '';
+            topSliderDotsSlot.appendChild(topDots);
+        }
+    }
+
+
     /* 1. Mobile Menu Toggle */
     const menuBtn = document.getElementById('menu-toggle');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -510,7 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const cards = Array.from(kooperativSlider.querySelectorAll('.kooperativ-card'));
         const carousels = Array.from(kooperativSlider.querySelectorAll('.kooperativ-image-carousel'));
-        const dotsContainer = document.querySelector('section[data-slider="kooperativ"] .slider-dots');
+        const dotsContainer = document.querySelector('#top-slider-dots-slot .top-slider-dots');
         const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.dot')) : [];
         const firstCard = cards[0];
         let cardWidth = firstCard ? firstCard.getBoundingClientRect().width : kooperativSlider.clientWidth;

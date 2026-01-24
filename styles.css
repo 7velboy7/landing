@@ -671,6 +671,28 @@ section[data-slider="kooperativ"] .slider-dots {
     margin-top: 1.5rem;
 }
 
+#top-slider {
+    position: relative;
+    overflow: visible;
+}
+
+#top-slider-dots-slot {
+    position: relative;
+    height: 0;
+    width: 100%;
+}
+
+#top-slider-dots-slot .top-slider-dots {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -34px;
+    z-index: 999;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: auto;
+}
+
 section[data-slider="kooperativ"] .slider-dots .dot {
     width: 12px;
     height: 12px;
