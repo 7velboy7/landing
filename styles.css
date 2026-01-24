@@ -1562,6 +1562,238 @@ body.fx-active #lightning-container {
     background: #000;
 }
 
+@media (max-width: 1024px) {
+    .section {
+        padding: var(--spacing-xl) 0;
+    }
+
+    .hero {
+        padding-top: calc(var(--header-height) + 3rem);
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .container {
+        padding: 0 1.5rem;
+    }
+
+    .section {
+        padding: 3.5rem 0;
+    }
+
+    .hero {
+        padding-top: calc(var(--header-height) + 2.5rem);
+        padding-bottom: 3rem;
+    }
+
+    .hero .grid {
+        gap: 2rem !important;
+    }
+
+    .hero-headline {
+        font-size: clamp(2.4rem, 7.5vw, 3.4rem);
+    }
+
+    .hero-subhead {
+        font-size: 1rem;
+        padding-left: 0.75rem;
+    }
+
+    .hero-logo-container svg {
+        width: 80px;
+    }
+
+    .clients-strip {
+        animation-duration: 22s;
+    }
+
+    .client-logo {
+        font-size: clamp(1.1rem, 4.5vw, 1.6rem);
+        padding-right: 2rem;
+    }
+
+    .card-segment {
+        padding: 1.5rem;
+    }
+
+    .case-card {
+        padding: 1rem;
+    }
+
+    .case-content h3 {
+        font-size: clamp(1.5rem, 6vw, 2.2rem);
+    }
+
+    .case-meta {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    #kooperativ-slider {
+        scroll-padding-inline: 1.5rem;
+    }
+
+    #kooperativ-slider .kooperativ-track {
+        gap: 1.5rem;
+    }
+
+    .btn:not(.btn-link) {
+        width: 100%;
+    }
+
+    .btn {
+        justify-content: center;
+    }
+
+    .testimonial-card-xl {
+        width: 280px;
+        padding: 1.75rem;
+    }
+
+    .testimonial-quote {
+        font-size: 1.1rem;
+    }
+
+    .faq-trigger {
+        padding: 1.1rem;
+        font-size: 1rem;
+    }
+
+    .faq-content {
+        padding: 0 1.1rem;
+    }
+
+    .faq-item[open] .faq-content {
+        padding: 0.9rem 1.1rem 1.1rem;
+    }
+
+    .section h2 {
+        font-size: clamp(2rem, 6vw, 2.6rem) !important;
+    }
+
+    #about .grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    #about .container {
+        padding: 0 !important;
+    }
+
+    #about .grid > div:first-child {
+        min-height: 280px !important;
+    }
+
+    #about .grid > div:last-child {
+        padding: 2rem 1.5rem 3rem 1.5rem !important;
+    }
+
+    .about-heading {
+        font-size: clamp(2.2rem, 8vw, 3rem) !important;
+        margin-bottom: 1.5rem;
+    }
+
+    .about-text-reveal {
+        font-size: 1rem !important;
+    }
+
+    #contact .grid {
+        gap: 2rem !important;
+    }
+
+    #contact p {
+        font-size: 1rem !important;
+    }
+
+    footer .container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    footer .container > div {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .section {
+        padding: 3rem 0;
+    }
+
+    .hero-headline {
+        font-size: clamp(2.1rem, 9vw, 2.9rem);
+    }
+
+    .hero-subhead {
+        font-size: 0.95rem;
+    }
+
+    .card-segment {
+        padding: 1.25rem;
+    }
+
+    .case-content h3 {
+        font-size: clamp(1.4rem, 7vw, 2rem);
+    }
+
+    .case-detail-label {
+        font-size: 0.65rem;
+    }
+
+    .testimonial-card-xl {
+        width: 260px;
+        padding: 1.5rem;
+    }
+
+    .testimonial-quote {
+        font-size: 1rem;
+    }
+
+    .faq-trigger {
+        padding: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .faq-content {
+        padding: 0 1rem;
+    }
+
+    .faq-item[open] .faq-content {
+        padding: 0.85rem 1rem 1rem;
+    }
+
+    .btn:not(.btn-link) {
+        padding: 0.9rem 1.25rem;
+        font-size: 0.95rem;
+    }
+
+    #kooperativ-slider {
+        scroll-padding-inline: 1rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .hero-headline {
+        font-size: clamp(1.9rem, 10vw, 2.6rem);
+    }
+
+    .hero-logo-container svg {
+        width: 70px;
+    }
+
+    .client-logo {
+        font-size: 1rem;
+        padding-right: 1.5rem;
+    }
+}
+
 @media (max-width: 480px) {
     #ai-chat-widget {
         bottom: 1rem;
