@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alex V. | Conceptual Illustrator & Visual Storyteller</title>
+    <title data-i18n="page_title">Alex V. | Conceptual Illustrator & Visual Storyteller</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -71,7 +71,7 @@
                 <div style="display: flex; flex-direction: column;">
                     <div>
                         <!-- Headline -->
-                        <h1 class="hero-headline" data-i18n="hero_title">
+                        <h1 class="hero-headline" data-i18n="hero_title" data-i18n-html>
                             Visual storytelling for <br>
                             <span style="color: var(--color-secondary);">ambitious brands & people.</span>
                         </h1>
@@ -110,8 +110,8 @@
                     <!-- Static Description Bar -->
                     <div class="hero-description-bar"
                         style="padding: 1rem; background: #fff; border-top: 2px solid #000;">
-                        <p style="font-size: var(--text-xs); font-weight: 700;">PUMA / Brand Campaign Illustration —
-                            2025
+                        <p style="font-size: var(--text-xs); font-weight: 700;" data-i18n="hero_caption">PUMA / Brand
+                            Campaign Illustration — 2025
                         </p>
                     </div>
 
@@ -172,8 +172,8 @@
     <section class="section" id="services-select">
         <div class="container">
             <div class="text-center" style="margin-bottom: 3rem;">
-                <h2 data-i18n="services_title">Focus & Deliverables</h2>
-                <p style="margin-top: 1rem; color: var(--color-text-muted);" data-i18n="services_sub">Select a category
+                <h2 data-i18n="services_select_title">Focus & Deliverables</h2>
+                <p style="margin-top: 1rem; color: var(--color-text-muted);" data-i18n="services_select_sub">Select a category
                     to see relevant examples.
                 </p>
             </div>
@@ -189,7 +189,7 @@
                     </div>
                     <h3 class="card-title" data-i18n="service_ed_title">Book & Editorial</h3>
                     <p style="font-size: 0.875rem; margin-bottom: 1.5rem; color: var(--color-text-muted);"
-                        data-i18n="service_ed_sub">Book covers, book illustrations, and conceptual editorial art for
+                       data-i18n="service_ed_sub">Book covers, book illustrations, and conceptual editorial art for
                         magazines.</p>
                     <span
                         style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; text-decoration: underline;"
@@ -226,7 +226,7 @@
                     </div>
                     <h3 class="card-title" data-i18n="service_poster_title">Album Art & Posters</h3>
                     <p style="font-size: 0.875rem; margin-bottom: 1.5rem; color: var(--color-text-muted);"
-                        data-i18n="service_poster_sub">Full-release visuals for artists — covers, vinyl, merch, and
+                       data-i18n="service_poster_sub">Full-release visuals for artists — covers, vinyl, merch, and
                         posters.</p>
                     <span
                         style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; text-decoration: underline;"
@@ -253,7 +253,7 @@
                         <div class="case-content project-copy">
                             <div class="project-left-top">
                                 <div class="case-meta">
-                                    <span data-i18n="case1_category2">Brand Illustration</span>
+                                    <span data-i18n="case1_category">Brand Illustration</span>
                                 </div>
                                 <h3 data-i18n="case1_title">KOOPERATIV Coworking Campaign</h3>
                             </div>
@@ -281,7 +281,7 @@
                             </div>
 
                             <div class="project-left-bottom">
-                                <a href="#contact" class="btn btn-link cta-discuss" data-i18n="case_cta" data-project-type="brand">Discuss a
+                                <a href="#contact" class="btn btn-link cta-discuss" data-project-type="brand" data-i18n="case_cta">Discuss a
                                     similar project</a>
                             </div>
                         </div>
@@ -302,7 +302,7 @@
                         <div class="case-content project-copy">
                             <div class="project-left-top">
                                 <div class="case-meta">
-                                    <span data-i18n="case1_category2">Brand Illustration</span>
+                                    <span data-i18n="case1_category">Brand Illustration</span>
                                 </div>
                                 <h3 data-i18n="case1_title">KOOPERATIV Coworking Campaign</h3>
                             </div>
@@ -330,7 +330,7 @@
                             </div>
 
                             <div class="project-left-bottom">
-                                <a href="#contact" class="btn btn-link cta-discuss" data-i18n="case_cta" data-project-type="brand">Discuss a
+                                <a href="#contact" class="btn btn-link cta-discuss" data-project-type="brand" data-i18n="case_cta">Discuss a
                                     similar project</a>
                             </div>
                         </div>
@@ -351,32 +351,33 @@
                         <div class="case-content project-copy">
                             <div class="project-left-top">
                                 <div class="case-meta">
-                                    <span>CATEGORY 3</span>
-                                </div>
-                                <h3>PROJECT TITLE 3</h3>
-                            </div>
+                    <span data-i18n="case3_category">CATEGORY 3</span>
+                </div>
+                <h3 data-i18n="case3_title">PROJECT TITLE 3</h3>
+            </div>
 
-                            <div class="project-left-mid">
-                                <div style="margin-bottom: 1.5rem;">
-                                    <span class="case-detail-label">Challenge</span>
-                                    <p style="font-size: 0.875rem;">Lorem ipsum dolor sit amet, consectetur adipiscing
-                                        elit. Integer sit amet accumsan arcu, ut luctus mauris.</p>
-                                </div>
-                                <div style="margin-bottom: 1.5rem;">
-                                    <span class="case-detail-label">Solution</span>
-                                    <p style="font-size: 0.875rem;">Curabitur euismod, nisl a facilisis varius, turpis
-                                        nisl aliquet lorem, nec tristique elit lacus non nulla.</p>
-                                </div>
-                                <div style="margin-bottom: 1.5rem;">
-                                    <span class="case-detail-label" style="background: var(--color-accent); color: #fff;">Result</span>
-                                    <p style="font-size: 0.875rem;">Suspendisse potenti. Donec tristique, libero non
-                                        feugiat placerat, lacus erat fermentum lacus.</p>
-                                </div>
-                            </div>
+            <div class="project-left-mid">
+                <div style="margin-bottom: 1.5rem;">
+                    <span class="case-detail-label" data-i18n="case1_challenge_label">Challenge</span>
+                    <p style="font-size: 0.875rem;" data-i18n="case3_challenge_text">Lorem ipsum dolor sit amet,
+                        consectetur adipiscing elit. Integer sit amet accumsan arcu, ut luctus mauris.</p>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <span class="case-detail-label" data-i18n="case1_solution_label">Solution</span>
+                    <p style="font-size: 0.875rem;" data-i18n="case3_solution_text">Curabitur euismod, nisl a facilisis
+                        varius, turpis nisl aliquet lorem, nec tristique elit lacus non nulla.</p>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <span class="case-detail-label" style="background: var(--color-accent); color: #fff;"
+                        data-i18n="case1_result_label">Result</span>
+                    <p style="font-size: 0.875rem;" data-i18n="case3_result_text">Suspendisse potenti. Donec tristique,
+                        libero non feugiat placerat, lacus erat fermentum lacus.</p>
+                </div>
+            </div>
 
-                            <div class="project-left-bottom">
-                                <a href="#contact" class="btn btn-link cta-discuss">Discuss a similar project</a>
-                            </div>
+            <div class="project-left-bottom">
+                <a href="#contact" class="btn btn-link cta-discuss" data-i18n="case_cta">Discuss a similar project</a>
+            </div>
                         </div>
                         <div class="case-image project-media">
                             <div class="case-image-slider kooperativ-image-carousel">
@@ -390,7 +391,7 @@
                     <button class="dot is-active" type="button" aria-label="Slide 1" aria-current="true"></button>
                     <button class="dot" type="button" aria-label="Slide 2"></button>
                     <button class="dot" type="button" aria-label="Slide 3"></button>
-                    <span class="slider-hint">Swipe →</span>
+                    <span class="slider-hint" data-i18n="slider_hint">Swipe →</span>
                 </div>
             </div>
             <div id="top-slider-dots-slot" aria-hidden="true"></div>
@@ -413,19 +414,19 @@
                                 <h3 data-i18n="case2_title">"Future Echoes" Novel</h3>
 
                                 <div style="margin-bottom: 1.5rem;">
-                                    <span class="case-detail-label" data-i18n="case2_challenge_label">Challenge</span>
+                                    <span class="case-detail-label" data-i18n="case1_challenge_label">Challenge</span>
                                     <p style="font-size: 0.875rem;" data-i18n="case2_challenge_text">Create a standout cover for a
                                         sci-fi bestseller in a saturated
                                         market.</p>
                                 </div>
                                 <div style="margin-bottom: 1.5rem;">
-                                    <span class="case-detail-label" data-i18n="case2_solution_label">Solution</span>
+                                    <span class="case-detail-label" data-i18n="case1_solution_label">Solution</span>
                                     <p style="font-size: 0.875rem;" data-i18n="case2_solution_text">Minimalist geometry mixed with
                                         organic textures to suggest
                                         mystery.</p>
                                 </div>
 
-                                <a href="#contact" class="btn btn-link cta-discuss" data-i18n="case_cta" data-project-type="book">Discuss a
+                                <a href="#contact" class="btn btn-link cta-discuss" data-project-type="book" data-i18n="case_cta">Discuss a
                                     similar project</a>
                             </div>
                         </article>
@@ -444,19 +445,19 @@
                                 <h3 data-i18n="case2_title">"Future Echoes" Novel</h3>
 
                                 <div style="margin-bottom: 1.5rem;">
-                                    <span class="case-detail-label" data-i18n="case2_challenge_label">Challenge</span>
+                                    <span class="case-detail-label" data-i18n="case1_challenge_label">Challenge</span>
                                     <p style="font-size: 0.875rem;" data-i18n="case2_challenge_text">Create a standout cover for a
                                         sci-fi bestseller in a saturated
                                         market.</p>
                                 </div>
                                 <div style="margin-bottom: 1.5rem;">
-                                    <span class="case-detail-label" data-i18n="case2_solution_label">Solution</span>
+                                    <span class="case-detail-label" data-i18n="case1_solution_label">Solution</span>
                                     <p style="font-size: 0.875rem;" data-i18n="case2_solution_text">Minimalist geometry mixed with
                                         organic textures to suggest
                                         mystery.</p>
                                 </div>
 
-                                <a href="#contact" class="btn btn-link cta-discuss" data-i18n="case_cta" data-project-type="book">Discuss a
+                                <a href="#contact" class="btn btn-link cta-discuss" data-project-type="book" data-i18n="case_cta">Discuss a
                                     similar project</a>
                             </div>
                         </article>
@@ -475,19 +476,19 @@
                                 <h3 data-i18n="case2_title">"Future Echoes" Novel</h3>
 
                                 <div style="margin-bottom: 1.5rem;">
-                                    <span class="case-detail-label" data-i18n="case2_challenge_label">Challenge</span>
+                                    <span class="case-detail-label" data-i18n="case1_challenge_label">Challenge</span>
                                     <p style="font-size: 0.875rem;" data-i18n="case2_challenge_text">Create a standout cover for a
                                         sci-fi bestseller in a saturated
                                         market.</p>
                                 </div>
                                 <div style="margin-bottom: 1.5rem;">
-                                    <span class="case-detail-label" data-i18n="case2_solution_label">Solution</span>
+                                    <span class="case-detail-label" data-i18n="case1_solution_label">Solution</span>
                                     <p style="font-size: 0.875rem;" data-i18n="case2_solution_text">Minimalist geometry mixed with
                                         organic textures to suggest
                                         mystery.</p>
                                 </div>
 
-                                <a href="#contact" class="btn btn-link cta-discuss" data-i18n="case_cta" data-project-type="book">Discuss a
+                                <a href="#contact" class="btn btn-link cta-discuss" data-project-type="book" data-i18n="case_cta">Discuss a
                                     similar project</a>
                             </div>
                         </article>
@@ -657,7 +658,7 @@
                 <div
                     style="padding: 2rem 4rem 8rem 4rem; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2;">
                     <h2 class="about-heading" style="margin-bottom: 2rem; color: #fff; font-size: 4rem;">
-                        <span class="playful-hey"><span>Hey,</span> <span>I'm</span></span>
+                        <span class="playful-hey"><span data-i18n="about_hey">Hey,</span> <span data-i18n="about_im">I'm</span></span>
                         <span class="playful-name drop-start">
                             <span style="color: #000">A</span><span style="color: var(--color-secondary)">l</span><span
                                 style="color: #000">e</span><span style="color: var(--color-alert)">x</span>
@@ -708,7 +709,7 @@
                     </div>
                     <div class="testimonial-author">
                         <div class="author-info">
-                            <strong data-i18n="t1_author">Sarah Jenkins</strong>
+                            <strong>Sarah Jenkins</strong>
                             <span data-i18n="t1_role">Art Director, Monocle</span>
                         </div>
                     </div>
@@ -722,8 +723,8 @@
                     </div>
                     <div class="testimonial-author">
                         <div class="author-info">
-                            <strong data-i18n="t2_author">Marcus Thorne</strong>
-                            <span data-i18n="t2_role" style="color: #000;">Lead Designer, Spotify</span>
+                            <strong>Marcus Thorne</strong>
+                            <span style="color: #000;" data-i18n="t2_role">Lead Designer, Spotify</span>
                         </div>
                     </div>
                 </div>
@@ -736,7 +737,7 @@
                     </div>
                     <div class="testimonial-author">
                         <div class="author-info">
-                            <strong data-i18n="t3_author">Elena Rossi</strong>
+                            <strong>Elena Rossi</strong>
                             <span data-i18n="t3_role">Founder, Knygolove</span>
                         </div>
                     </div>
@@ -896,7 +897,7 @@
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
-                            Response time: up to 24h (Mon–Fri)
+                            <span data-i18n="contact_response_time">Response time: up to 24h (Mon–Fri)</span>
                         </div>
                     </div>
 
@@ -908,9 +909,9 @@
                         </div>
                         <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
                             <a href="https://t.me/Alex_Velboy" target="_blank"
-                                style="color: #888; text-decoration: underline;" data-i18n="social_tg">Telegram</a>
+                                style="color: #888; text-decoration: underline;">Telegram</a>
                             <a href="https://wa.me/#" target="_blank" style="color: #888; text-decoration: underline;"
-                                data-i18n="social_wa">WhatsApp</a>
+                               >WhatsApp</a>
                         </div>
                     </div>
                 </div>
@@ -971,11 +972,11 @@
                             Send Inquiry
                         </button>
                         <p id="form-success" class="hidden"
-                            style="margin-top: 1rem; font-weight: 700; color: #000;">
+                            style="margin-top: 1rem; font-weight: 700; color: #000;" data-i18n="form_success">
                             ✅ Sent
                         </p>
                         <p id="form-error" class="hidden"
-                            style="margin-top: 0.75rem; font-weight: 700; color: #b00020;">
+                            style="margin-top: 0.75rem; font-weight: 700; color: #b00020;" data-i18n="form_error">
                             ❌ Error
                         </p>
                     </form>
@@ -989,12 +990,14 @@
         <div class="container"
             style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; align-items: center;">
             <div>
-                <p style="font-weight: 700;">© 2023 Alex V. Illustration. All rights reserved.</p>
-                <p style="color: #888; font-size: 0.875rem;">Based in Europe, available worldwide.</p>
+                <p style="font-weight: 700;" data-i18n="footer_rights">© 2023 Alex V. Illustration. All rights
+                    reserved.</p>
+                <p style="color: #888; font-size: 0.875rem;" data-i18n="footer_based">Based in Europe, available
+                    worldwide.</p>
             </div>
             <div style="display: flex; gap: 1.5rem;">
-                <a href="#" style="color: #888;">Privacy Policy</a>
-                <a href="#" style="color: #888;">Terms</a>
+                <a href="#" style="color: #888;" data-i18n="footer_privacy">Privacy Policy</a>
+                <a href="#" style="color: #888;" data-i18n="footer_terms">Terms</a>
             </div>
         </div>
     </footer>
@@ -1028,23 +1031,24 @@
 
     <!-- AI Chat Widget -->
     <div id="ai-chat-widget">
-        <button id="ai-chat-toggle" aria-label="Open AI Chat">
+        <button id="ai-chat-toggle" aria-label="Open AI Chat" data-i18n-aria="chat_toggle_aria">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
         </button>
         <div id="ai-chat-window" class="hidden">
             <div class="chat-header">
-                <span class="chat-title">Alex.V AI Assistant</span>
+                <span class="chat-title" data-i18n="chat_title">Alex.V AI Assistant</span>
                 <button id="ai-chat-close">&times;</button>
             </div>
             <div id="chat-messages">
                 <div class="message bot">
-                    Hey! I'm Alex's AI assistant. Ask me anything about his work, pricing, or process.
+                    <span data-i18n="chat_intro">Hey! I'm Alex's AI assistant. Ask me anything about his work, pricing, or process.</span>
                 </div>
             </div>
             <form id="chat-input-form">
-                <input type="text" id="chat-input" placeholder="Type your question..." autocomplete="off">
+                <input type="text" id="chat-input" placeholder="Type your question..." autocomplete="off"
+                    data-i18n="chat_placeholder">
                 <button type="submit">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 2L11 13"></path>
@@ -1054,6 +1058,303 @@
             </form>
         </div>
     </div>
+
+    <script type="application/json" id="i18n-en">
+        {
+          "page_title": "Alex V. | Conceptual Illustrator & Visual Storyteller",
+          "nav_work": "Work",
+          "nav_services": "Services",
+          "nav_process": "Process",
+          "nav_about": "About",
+          "nav_request": "Request Project",
+          "nav_contact_me": "Contact Me",
+          "nav_request_project": "Request a Project",
+          "hero_title": "Visual storytelling for <br> <span style='color: var(--color-secondary);'>ambitious brands & people.</span>",
+          "hero_sub": "I help brands, publishers, and musicians turn complex ideas into distinct visual narratives. Strategic illustration that turns attention into inquiries.",
+          "hero_cta_request": "Request a Project",
+          "hero_cta_view": "View Selected Cases",
+          "hero_caption": "PUMA / Brand Campaign Illustration - 2025",
+          "social_trusted": "Trusted by creative teams at:",
+          "services_select_title": "Focus & Deliverables",
+          "services_select_sub": "Select a category to see relevant examples.",
+          "service_ed_title": "Book & Editorial",
+          "service_ed_sub": "Book covers, book illustrations, and conceptual editorial art for magazines.",
+          "service_ed_cta": "See Examples",
+          "service_brand_title": "Brand Illustration",
+          "service_brand_sub": "Custom brand illustration for packaging, products, and physical spaces.",
+          "service_brand_cta": "See brand work",
+          "service_poster_title": "Album Art & Posters",
+          "service_poster_sub": "Full-release visuals for artists - covers, vinyl, merch, and posters.",
+          "service_poster_cta": "See Examples",
+          "work_title": "Selected Works",
+          "work_sub": "selection of concept-led work built for real-world use.",
+          "case1_category": "Brand Illustration",
+          "case1_title": "KOOPERATIV Coworking Campaign",
+          "case1_challenge_label": "Challenge",
+          "case1_challenge_text": "Translate KOOPERATIV's community values into one cohesive visual world - and adapt it across multiple physical formats (cups, print, and large window displays) while staying brand-consistent.",
+          "case1_solution_label": "Solution",
+          "case1_solution_text": "Built a \"resident archetype\" and translated it into a limited-palette, mirrored illustration system - designed as a reflection of the coworking community and produced for cups, notebooks, and storefront windows.",
+          "case1_result_label": "Result",
+          "case1_result_text": "Produced and installed across KOOPERATIV's physical touchpoints",
+          "case_cta": "Discuss a similar project",
+          "case3_category": "CATEGORY 3",
+          "case3_title": "PROJECT TITLE 3",
+          "case3_challenge_text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sit amet accumsan arcu, ut luctus mauris.",
+          "case3_solution_text": "Curabitur euismod, nisl a facilisis varius, turpis nisl aliquet lorem, nec tristique elit lacus non nulla.",
+          "case3_result_text": "Suspendisse potenti. Donec tristique, libero non feugiat placerat, lacus erat fermentum lacus.",
+          "slider_hint": "Swipe →",
+          "case2_category1": "Publishing",
+          "case2_category2": "Cover Design",
+          "case2_title": "\"Future Echoes\" Novel",
+          "case2_challenge_text": "Create a standout cover for a sci-fi bestseller in a saturated market.",
+          "case2_solution_text": "Minimalist geometry mixed with organic textures to suggest mystery.",
+          "work_portfolio_cta": "SHOW ALL PROJECTS",
+          "download_pdf": "Download PDF",
+          "usp_title": "Why clients choose to work with me",
+          "usp1_title": "Strong Concept-First Approach",
+          "usp1_text": "I don't just draw pretty pictures. I solve communication problems. Every line has a purpose.",
+          "usp2_title": "Clean delivery for teams",
+          "usp2_text": "CMYK-safe, web-ready, and organized files your designers and printers can use immediately.",
+          "usp3_title": "Reliable timelines",
+          "usp3_text": "You always know what's next: checkpoints, revisions, and delivery dates are clear.",
+          "services_card_title": "I'm cool (professionally).",
+          "services_card_p1": "I art-direct the whole project. From concept to final files.",
+          "services_card_p2": "I build the concept, define the visual direction, and lead it all the way through - your team can jump in for technical tweaks when needed.",
+          "services_card_p3": "My job is to turn ideas into real, physical touchpoints that people notice, remember, and want to engage with.",
+          "services_card_p4": "Strong visuals don't just look good - they improve attention, perception, and conversion across the funnel.",
+          "process_title": "How we work together",
+          "process_step1_title": "1. Discovery & Brief",
+          "process_step1_text": "We hop on a call to discuss goals, specs, and timeline. I deliver a quote within 24h.",
+          "process_step2_title": "2. Concepts & Sketches",
+          "process_step2_text": "I provide 2-3 loose conceptual directions. We choose the strongest path.",
+          "process_step3_title": "3. Refinement",
+          "process_step3_text": "Detailed line work and color blocking. Two rounds of revisions included.",
+          "process_step4_title": "4. Final Delivery",
+          "process_step4_text": "High-res files + source files. Rights transfer upon final payment.",
+          "about_hey": "Hey,",
+          "about_im": "I'm",
+          "about_sub": "I'm Alex Velboy - a Europe-based illustrator & visual artist.",
+          "about_sub_2": "I work with brands, editors, and creative teams who want visuals with a clear idea - not just something \"nice\"",
+          "about_sub_3": "My superpower is absurd thinking with precision: I take a brief, find the weird truth inside it, and push it until the concept clicks hard - visually, emotionally, and strategically.",
+          "about_sub_4": "Human detail, because I'm not a PDF: I've wanted to be an artist since I was a kid. Somehow it worked out - and now my favorite part is taking wild concepts and turning them into something real: campaigns, spaces, covers, murals, installations, an object you can touch and visuals you can actually live with.",
+          "testimonials_title": "What people say",
+          "t1_quote": "Alex is a rare find. He doesn't just draw; he thinks deeply about the brand's message.",
+          "t1_role": "Art Director, Monocle",
+          "t2_quote": "The turnaround was incredibly fast, and the quality was top-notch. Perfect for our campaign.",
+          "t2_role": "Lead Designer, Spotify",
+          "t3_quote": "His conceptual approach turned a simple brief into a visual masterpiece. Highly recommended.",
+          "t3_role": "Founder, Knygolove",
+          "faq_title": "Common Questions",
+          "faq1_question": "How long does a project usually take?",
+          "faq1_answer": "Small projects (e.g., one illustration) typically take about one week. Bigger projects usually take 2-4 weeks, depending on scope.",
+          "faq2_question": "How many concepts do you provide?",
+          "faq2_answer": "At the start, we align on the idea and I deliver two fully developed concept sketches. Each concept comes with its own story, meaning, and visual logic.",
+          "faq3_question": "How many revision rounds are included?",
+          "faq3_answer": "We lock the direction at the sketch/concept stage, then I refine it with your feedback while keeping the overall vision consistent. Small tweaks and clarifications are included (up to ~10), but the final artistic direction stays with me.",
+          "faq4_question": "Do you deliver source files?",
+          "faq4_answer": "Yes - I provide the files you need for your use case, including print-ready and high-resolution digital versions. Source files can be included when required and agreed in advance.",
+          "faq5_question": "What does your process look like, step by step?",
+          "faq5_answer": "We start with a call to explore the idea, goals, and best execution options, then sign a contract. If it's a physical space, I visit (or work from materials), build a plan, share the initial vision, and then deliver final files.",
+          "faq6_question": "How does pricing and payment work (deposit, milestones)?",
+          "faq6_answer": "I work with a 50% deposit for projects of any size. Payment terms are clearly stated in the contract we sign before starting.",
+          "faq7_question": "Do you take rush projects?",
+          "faq7_answer": "Yes, rush projects are possible depending on my schedule. Timeline and rush fee are discussed individually.",
+          "faq8_question": "What do you need from me to get started?",
+          "faq8_answer": "A quick conversation about what you have and what you want to achieve, plus access to your materials or space (if applicable). After that, I take the lead and handle the process.",
+          "faq9_question": "Can we work together if my business is in another country?",
+          "faq9_answer": "Absolutely - I work internationally and we can run everything via calls, messages, and mockups. For physical applications, I prepare clear production-ready files and guides tailored to your format.",
+          "faq10_question": "Can we plan a long-term collaboration?",
+          "faq10_answer": "Yes - long-term projects are welcome once we align on the scope, timeline, and working rhythm. I can lead the visual direction as an art director throughout the collaboration.",
+          "contact_label": "Contact",
+          "contact_title": "Let's discuss your project.",
+          "contact_sub": "Open for selected commissions. Share a few details - I'll respond with a clear plan.",
+          "contact_response_time": "Response time: up to 24h (Mon-Fri)",
+          "form_name": "Name",
+          "form_email": "Email",
+          "form_project_type": "Project Type",
+          "form_category_placeholder": "Select a category...",
+          "form_brand": "Brand Illustration",
+          "form_ed": "Editorial Illustration",
+          "form_pkg": "Packaging",
+          "form_book": "Book Cover",
+          "form_album": "Album Cover",
+          "form_other": "Other",
+          "form_budget": "Approx. Budget",
+          "form_budget_placeholder": "Select range...",
+          "form_details": "Project Details",
+          "form_details_placeholder": "Briefly describe what you need...",
+          "form_submit": "Send Inquiry",
+          "form_success": "✅ Sent",
+          "form_error": "❌ Error",
+          "form_submit_loading": "Sending...",
+          "form_success_text": "✅ Sent",
+          "form_error_text": "❌ Error",
+          "form_success_receipt_pending": " (receipt pending)",
+          "footer_rights": "© 2023 Alex V. Illustration. All rights reserved.",
+          "footer_based": "Based in Europe, available worldwide.",
+          "footer_privacy": "Privacy Policy",
+          "footer_terms": "Terms",
+          "chat_title": "Alex.V AI Assistant",
+          "chat_intro": "Hey! I'm Alex's AI assistant. Ask me anything about his work, pricing, or process.",
+          "chat_placeholder": "Type your question...",
+          "chat_toggle_aria": "Open AI Chat",
+          "chat_responses": {
+            "price": "Alex's projects usually start at $300 USD. This ensures high quality and dedicated time for each brief.",
+            "services": "Alex offers Brand Illustration, Packaging Design, Book & Editorial Illustration, and Posters.",
+            "process": "The process has 4 steps: Discovery, Concepts, Refinement, and Final Delivery. You can see more in the 'Process' section!",
+            "contact": "You can reach Alex at itsme@alexvelboy.com or via the contact form on this page.",
+            "default": "That's a great question! I'm just an AI assistant, but you can find more details in the sections above, or email Alex directly at itsme@alexvelboy.com."
+          }
+        }
+    </script>
+    <script type="application/json" id="i18n-ua">
+        {
+          "page_title": "Alex V. | Концептуальний ілюстратор та візуальний сторітелер",
+          "nav_work": "Роботи",
+          "nav_services": "Послуги",
+          "nav_process": "Процес",
+          "nav_about": "Про мене",
+          "nav_request": "Замовити проєкт",
+          "nav_contact_me": "Написати мені",
+          "nav_request_project": "Замовити проєкт",
+          "hero_title": "Візуальний сторітелінг для <br> <span style='color: var(--color-secondary);'>амбіційних брендів та людей.</span>",
+          "hero_sub": "Я допомагаю брендам, видавництвам і музикантам перетворювати складні ідеї на виразні візуальні наративи. Стратегічна ілюстрація, що перетворює увагу на запити.",
+          "hero_cta_request": "Замовити проєкт",
+          "hero_cta_view": "Дивитися вибрані кейси",
+          "hero_caption": "PUMA / Ілюстрація для бренд-кампанії - 2025",
+          "social_trusted": "Нам довіряють креативні команди:",
+          "services_select_title": "Фокус та результати",
+          "services_select_sub": "Оберіть категорію, щоб переглянути релевантні приклади.",
+          "service_ed_title": "Книги та редакційні ілюстрації",
+          "service_ed_sub": "Обкладинки книг, книжкові ілюстрації та концептуальний редакційний арт для журналів.",
+          "service_ed_cta": "Дивитися приклади",
+          "service_brand_title": "Брендова ілюстрація",
+          "service_brand_sub": "Кастомна брендова ілюстрація для пакування, продуктів і фізичних просторів.",
+          "service_brand_cta": "Дивитися бренд-роботи",
+          "service_poster_title": "Обкладинки та постери",
+          "service_poster_sub": "Повний візуальний супровід релізів - обкладинки, вініл, мерч і постери.",
+          "service_poster_cta": "Дивитися приклади",
+          "work_title": "Обрані роботи",
+          "work_sub": "добірка концептуальних робіт, створених для реальних задач.",
+          "case1_category": "Брендова ілюстрація",
+          "case1_title": "Кампанія для KOOPERATIV Coworking",
+          "case1_challenge_label": "Завдання",
+          "case1_challenge_text": "Перекласти цінності спільноти KOOPERATIV в єдиний візуальний світ і адаптувати його для різних фізичних форматів (чашки, друк і великі вітрини), зберігаючи бренд-консистентність.",
+          "case1_solution_label": "Рішення",
+          "case1_solution_text": "Створив \"архетип мешканця\" і перетворив його на систему дзеркальних ілюстрацій з обмеженою палітрою - як віддзеркалення спільноти коворкінгу. Вироблено для чашок, блокнотів і вітрин.",
+          "case1_result_label": "Результат",
+          "case1_result_text": "Вироблено та встановлено по всіх фізичних точках контакту KOOPERATIV",
+          "case_cta": "Обговорити подібний проєкт",
+          "case3_category": "КАТЕГОРІЯ 3",
+          "case3_title": "НАЗВА ПРОЄКТУ 3",
+          "case3_challenge_text": "Плейсхолдерний текст про завдання для третього проєкту.",
+          "case3_solution_text": "Плейсхолдерний текст про рішення для третього проєкту.",
+          "case3_result_text": "Плейсхолдерний текст про результат для третього проєкту.",
+          "slider_hint": "Свайп →",
+          "case2_category1": "Видавництво",
+          "case2_category2": "Дизайн обкладинки",
+          "case2_title": "Роман \"Future Echoes\"",
+          "case2_challenge_text": "Створити помітну обкладинку для науково-фантастичного бестселера на перенасиченому ринку.",
+          "case2_solution_text": "Мінімалістична геометрія в поєднанні з органічними текстурами для відчуття загадковості.",
+          "work_portfolio_cta": "ПОКАЗАТИ ВСІ ПРОЄКТИ",
+          "download_pdf": "Завантажити PDF",
+          "usp_title": "Чому клієнти обирають роботу зі мною",
+          "usp1_title": "Сильний концептуальний підхід",
+          "usp1_text": "Я не просто малюю красиві картинки. Я вирішую комунікаційні задачі. Кожна лінія має сенс.",
+          "usp2_title": "Чистий результат для команд",
+          "usp2_text": "Файли готові до CMYK-друку і вебу, організовані так, щоб дизайнери й друкарні могли працювати одразу.",
+          "usp3_title": "Надійні терміни",
+          "usp3_text": "Ви завжди знаєте, що далі: контрольні точки, правки та дати здачі зрозумілі.",
+          "services_card_title": "Я крутий (професійно).",
+          "services_card_p1": "Я арт-директую весь проєкт. Від концепту до фінальних файлів.",
+          "services_card_p2": "Я будую концепт, визначаю візуальний напрям і веду все до кінця - ваша команда може підключатися для технічних правок за потреби.",
+          "services_card_p3": "Моя робота - перетворювати ідеї на реальні фізичні точки контакту, які люди помічають, запам'ятовують і з якими хочуть взаємодіяти.",
+          "services_card_p4": "Сильна візуальна мова не просто виглядає добре - вона покращує увагу, сприйняття і конверсію по всій воронці.",
+          "process_title": "Як ми працюємо разом",
+          "process_step1_title": "1. Діскавері та бриф",
+          "process_step1_text": "Ми зідзвонюємось, обговорюємо цілі, вимоги й таймінг. Я надсилаю кошторис протягом 24 годин.",
+          "process_step2_title": "2. Концепти та ескізи",
+          "process_step2_text": "Я пропоную 2-3 вільні концептуальні напрямки. Ми обираємо найсильніший.",
+          "process_step3_title": "3. Доопрацювання",
+          "process_step3_text": "Детальна лінійна робота та колор-блокінг. Два раунди правок включено.",
+          "process_step4_title": "4. Фінальна здача",
+          "process_step4_text": "Файли у високій роздільності + вихідники. Права переходять після фінальної оплати.",
+          "about_hey": "Привіт,",
+          "about_im": "я",
+          "about_sub": "Я Alex Velboy - ілюстратор та візуальний художник з Європи.",
+          "about_sub_2": "Я працюю з брендами, редакціями та креативними командами, яким потрібні візуали з чіткою ідеєю - не просто щось \"гарненьке\"",
+          "about_sub_3": "Моя суперсила - абсурдне мислення з точністю: я беру бриф, знаходжу в ньому дивну правду і розкручую її до моменту, коли концепт клацає - візуально, емоційно та стратегічно.",
+          "about_sub_4": "Людська деталь, бо я не PDF: я мріяв бути художником з дитинства. Якимось дивом усе склалося - і тепер моя улюблена частина роботи це перетворювати дикі ідеї на щось реальне: кампанії, простори, обкладинки, мурали, інсталяції, об'єкти, яких можна торкнутися, і візуали, з якими можна жити.",
+          "testimonials_title": "Що кажуть люди",
+          "t1_quote": "Алекс - справжня знахідка. Він не просто малює; він глибоко занурюється в суть повідомлення бренду.",
+          "t1_role": "Арт-директор, Monocle",
+          "t2_quote": "Терміни були неймовірно швидкими, а якість - на найвищому рівні. Ідеально для нашої кампанії.",
+          "t2_role": "Провідний дизайнер, Spotify",
+          "t3_quote": "Його концептуальний підхід перетворив простий бриф на візуальний шедевр. Дуже рекомендую.",
+          "t3_role": "Засновниця, Knygolove",
+          "faq_title": "Часті запитання",
+          "faq1_question": "Скільки зазвичай триває проєкт?",
+          "faq1_answer": "Невеликі проєкти (наприклад, одна ілюстрація) зазвичай займають близько тижня. Більші - 2-4 тижні залежно від обсягу.",
+          "faq2_question": "Скільки концептів ви пропонуєте?",
+          "faq2_answer": "На старті ми узгоджуємо ідею, і я роблю два повністю опрацьовані концепт-ескізи. Кожен має свою історію, сенс і візуальну логіку.",
+          "faq3_question": "Скільки раундів правок включено?",
+          "faq3_answer": "Ми фіксуємо напрям на етапі ескізів і далі доопрацьовуємо з урахуванням ваших фідбеків. Невеликі правки та уточнення включені (до ~10), але фінальний художній напрям за мною.",
+          "faq4_question": "Чи надаєте ви вихідні файли?",
+          "faq4_answer": "Так - надаю файли, потрібні для вашого кейсу, включно з друк-готовими та high-res цифровими версіями. Вихідники можливі за потреби та домовленістю.",
+          "faq5_question": "Як виглядає процес, крок за кроком?",
+          "faq5_answer": "Починаємо з дзвінка, щоб дослідити ідею, цілі та найкращий спосіб реалізації, потім підписуємо контракт. Якщо це фізичний простір, я приїжджаю (або працюю з матеріалами), будую план, показую початкове бачення і далі передаю фінальні файли.",
+          "faq6_question": "Як працює ціноутворення і оплата (депозит, етапи)?",
+          "faq6_answer": "Я працюю з депозитом 50% для проєктів будь-якого розміру. Умови оплати фіксуються в контракті перед стартом.",
+          "faq7_question": "Чи берете термінові проєкти?",
+          "faq7_answer": "Так, термінові проєкти можливі залежно від графіка. Таймінг і rush fee обговорюються індивідуально.",
+          "faq8_question": "Що вам потрібно від мене для старту?",
+          "faq8_answer": "Коротка розмова про те, що у вас є та що ви хочете отримати, плюс доступ до матеріалів або простору (за потреби). Далі я беру процес на себе.",
+          "faq9_question": "Чи можемо співпрацювати, якщо мій бізнес в іншій країні?",
+          "faq9_answer": "Звісно - я працюю міжнародно і ми можемо все вести через дзвінки, повідомлення та мокапи. Для фізичних застосувань я готую чіткі production-ready файли та гайди під ваш формат.",
+          "faq10_question": "Чи можлива довгострокова співпраця?",
+          "faq10_answer": "Так - довгострокові проєкти вітаються після узгодження обсягу, таймінгу та ритму роботи. Я можу вести візуальний напрям як арт-директор протягом всієї співпраці.",
+          "contact_label": "Контакт",
+          "contact_title": "Обговоримо ваш проєкт.",
+          "contact_sub": "Відкритий до вибіркових замовлень. Поділіться деталями - я відповім з чітким планом.",
+          "contact_response_time": "Час відповіді: до 24 годин (Пн-Пт)",
+          "form_name": "Ім'я",
+          "form_email": "Email",
+          "form_project_type": "Тип проєкту",
+          "form_category_placeholder": "Оберіть категорію...",
+          "form_brand": "Брендова ілюстрація",
+          "form_ed": "Редакційна ілюстрація",
+          "form_pkg": "Пакування",
+          "form_book": "Обкладинка книги",
+          "form_album": "Обкладинка альбому",
+          "form_other": "Інше",
+          "form_budget": "Приблизний бюджет",
+          "form_budget_placeholder": "Оберіть діапазон...",
+          "form_details": "Деталі проєкту",
+          "form_details_placeholder": "Коротко опишіть, що вам потрібно...",
+          "form_submit": "Надіслати запит",
+          "form_success": "✅ Надіслано",
+          "form_error": "❌ Помилка",
+          "form_submit_loading": "Надсилання...",
+          "form_success_text": "✅ Надіслано",
+          "form_error_text": "❌ Помилка",
+          "form_success_receipt_pending": " (квитанція в обробці)",
+          "footer_rights": "© 2023 Alex V. Illustration. Усі права захищено.",
+          "footer_based": "Базуюсь у Європі, працюю по всьому світу.",
+          "footer_privacy": "Політика конфіденційності",
+          "footer_terms": "Умови",
+          "chat_title": "AI асистент Alex.V",
+          "chat_intro": "Привіт! Я AI-асистент Алекса. Питай про його роботи, ціни або процес.",
+          "chat_placeholder": "Напишіть ваше запитання...",
+          "chat_toggle_aria": "Відкрити AI чат",
+          "chat_responses": {
+            "price": "Проєкти Алекса зазвичай стартують від $300 USD. Це гарантує високу якість та присвячений час для кожного брифу.",
+            "services": "Алекс пропонує брендову ілюстрацію, дизайн пакування, книжкову та редакційну ілюстрацію, а також постери.",
+            "process": "Процес має 4 кроки: Діскавері, Концепти, Доопрацювання та Фінальна здача. Більше деталей у розділі \"Процес\"!",
+            "contact": "Ви можете написати Алексу на itsme@alexvelboy.com або заповнити форму зворотного зв'язку на цій сторінці.",
+            "default": "Гарне питання! Я лише AI-помічник, але ви можете знайти більше деталей у розділах вище або написати Алексу на itsme@alexvelboy.com."
+          }
+        }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 </body>

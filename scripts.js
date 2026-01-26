@@ -107,230 +107,96 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* 4. Language Switcher Logic */
-    const translations = {
-        en: {
-            nav_work: "Work",
-            nav_services: "Services",
-            nav_process: "Process",
-            nav_about: "About",
-            nav_availability: "Check Availability",
-            nav_request: "Request Project",
-            nav_contact_me: "Contact Me",
-            nav_request_project: "Request a Project",
-            hero_title: "Visual storytelling for <br> <span style='color: var(--color-secondary);'>ambitious brands & people.</span>",
-            hero_sub: "I help brands, publishers, and musicians turn complex ideas into distinct visual narratives. Strategic illustration that turns attention into inquiries.",
-            hero_cta_request: "Request a Project",
-            hero_cta_view: "View Selected Cases",
-            badge_available: "Available for Q4 2023",
-            social_trusted: "Trusted by creative teams at:",
-            services_title: "Focus & Deliverables",
-            services_sub: "Select a category to see relevant examples.",
-            service_ed_title: "Book & Editorial",
-            service_ed_sub: "Book covers, book illustrations, and conceptual editorial art for magazines.",
-            service_ed_cta: "See Examples",
-            service_brand_title: "Brand Illustration",
-            service_brand_sub: "Custom brand illustration for packaging, products, and physical spaces.",
-            service_brand_cta: "See brand work",
-            service_poster_title: "Album Art & Posters",
-            service_poster_sub: "Full-release visuals for artists — covers, vinyl, merch, and posters.",
-            service_poster_cta: "See Examples",
-            work_title: "Selected Works",
-            work_sub: "selection of concept-led work built for real-world use.",
-            about_title: "Hey, I'm <span style='color: black'>A</span><span style='color: #E6C300'>l</span><span style='color: black'>e</span><span style='color: var(--color-alert)'>x</span> <span style='color: var(--color-secondary)'>V</span><span style='color: black'>e</span><span style='color: var(--color-accent)'>l</span><span style='color: #E6C300'>b</span><span style='color: black'>o</span><span style='color: #E6C300'>y</span>",
-            about_sub: "I'm Alex Velboy — a Europe-based illustrator & visual artist.",
-            about_sub_2: "I work with brands, editors, and creative teams who want visuals with a clear idea — not just something \"nice\"",
-            about_sub_3: "My superpower is absurd thinking with precision: I take a brief, find the weird truth inside it, and push it until the concept clicks hard — visually, emotionally, and strategically.",
-            about_sub_4: "Human detail, because I'm not a PDF: I've wanted to be an artist since I was a kid. Somehow it worked out — and now my favorite part is taking wild concepts and turning them into something real: campaigns, spaces, covers, murals, installations, an object you can touch and visuals you can actually live with.",
-            faq_title: "Common Questions",
-            faq1_question: "How long does a project usually take?",
-            faq1_answer: "Small projects (e.g., one illustration) typically take about one week. Bigger projects usually take 2–4 weeks, depending on scope.",
-            faq2_question: "How many concepts do you provide?",
-            faq2_answer: "At the start, we align on the idea and I deliver two fully developed concept sketches. Each concept comes with its own story, meaning, and visual logic.",
-            faq3_question: "How many revision rounds are included?",
-            faq3_answer: "We lock the direction at the sketch/concept stage, then I refine it with your feedback while keeping the overall vision consistent. Small tweaks and clarifications are included (up to ~10), but the final artistic direction stays with me.",
-            faq4_question: "Do you deliver source files?",
-            faq4_answer: "Yes — I provide the files you need for your use case, including print-ready and high-resolution digital versions. Source files can be included when required and agreed in advance.",
-            faq5_question: "What does your process look like, step by step?",
-            faq5_answer: "We start with a call to explore the idea, goals, and best execution options, then sign a contract. If it’s a physical space, I visit (or work from materials), build a plan, share the initial vision, and then deliver final files.",
-            faq6_question: "How does pricing and payment work (deposit, milestones)?",
-            faq6_answer: "I work with a 50% deposit for projects of any size. Payment terms are clearly stated in the contract we sign before starting.",
-            faq7_question: "Do you take rush projects?",
-            faq7_answer: "Yes, rush projects are possible depending on my schedule. Timeline and rush fee are discussed individually.",
-            faq8_question: "What do you need from me to get started?",
-            faq8_answer: "A quick conversation about what you have and what you want to achieve, plus access to your materials or space (if applicable). After that, I take the lead and handle the process.",
-            faq9_question: "Can we work together if my business is in another country?",
-            faq9_answer: "Absolutely — I work internationally and we can run everything via calls, messages, and mockups. For physical applications, I prepare clear production-ready files and guides tailored to your format.",
-            faq10_question: "Can we plan a long-term collaboration?",
-            faq10_answer: "Yes — long-term projects are welcome once we align on the scope, timeline, and working rhythm. I can lead the visual direction as an art director throughout the collaboration.",
-            contact_title: "Let's discuss your project.",
-            contact_sub: "Open for selected commissions. Share a few details — I’ll respond with a clear plan.",
-            services_list_title: "Services & Formats",
-            service_item1_title: "Brand Illustration Systems",
-            service_item1_sub: "Key visual + assets",
-            service_item2_title: "Packaging & Physical Products",
-            service_item2_sub: "Print-ready files",
-            service_item3_title: "Book & Editorial Illustration",
-            service_item3_sub: "concept + illustration",
-            service_item4_title: "Animation Assets",
-            service_item4_sub: "Layered Source",
-            services_minimum_title: "Project minimum: $300 USD",
-            services_minimum_sub: "Ensures dedicated time and high-quality focus on your brief.",
-            services_card_title: "I’m cool (professionally).",
-            services_card_p1: "I art-direct the whole project. From concept to final files.",
-            services_card_p2: "I build the concept, define the visual direction, and lead it all the way through — your team can jump in for technical tweaks when needed.",
-            services_card_p3: "My job is to turn ideas into real, physical touchpoints that people notice, remember, and want to engage with.",
-            services_card_p4: "Strong visuals don’t just look good — they improve attention, perception, and conversion across the funnel.",
-            work_portfolio_cta: "View full portfolio",
-            download_pdf: "Download PDF",
-            usp_title: "Why clients choose to work with me",
-            usp1_title: "Strong Concept-First Approach",
-            usp1_text: "I turn complex ideas into clean visuals that communicate fast — perfect for campaigns, covers, and packaging.",
-            usp2_title: "Production-ready delivery",
-            usp2_text: "CMYK-safe, web-ready, and organized files your designers and printers can use immediately.",
-            usp3_title: "Reliable timelines",
-            usp3_text: "You always know what’s next: checkpoints, revisions, and delivery dates are clear.",
-            testimonials_title: "What people say",
-            t1_quote: "Alex is a rare find. He doesn't just draw; he thinks deeply about the brand's message.",
-            t1_author: "Sarah Jenkins",
-            t1_role: "Art Director, Monocle",
-            t2_quote: "The turnaround was incredibly fast, and the quality was top-notch. Perfect for our campaign.",
-            t2_author: "Marcus Thorne",
-            t2_role: "Lead Designer, Spotify",
-            t3_quote: "His conceptual approach turned a simple brief into a visual masterpiece. Highly recommended.",
-            t3_author: "Elena Rossi",
-            t3_role: "Founder, Knygolove",
-            form_name: "Name",
-            form_email: "Email",
-            form_project_type: "Project Type",
-            form_category_placeholder: "Select a category...",
-            form_ed: "Editorial Illustration",
-            form_brand: "Brand Illustration",
-            form_pkg: "Packaging",
-            form_book: "Book Cover",
-            form_album: "Album Cover",
-            form_other: "Other",
-            form_budget: "Approx. Budget",
-            form_budget_placeholder: "Select range...",
-            form_details: "Project Details",
-            form_details_placeholder: "Briefly describe what you need...",
-            form_submit: "Send Inquiry",
-            social_tg: "Telegram",
-            social_wa: "WhatsApp"
-        },
-        ua: {
-            nav_work: "Роботи",
-            nav_services: "Послуги",
-            nav_process: "Процес",
-            nav_about: "Про мене",
-            nav_availability: "Перевірити доступність",
-            nav_request: "Замовити проект",
-            nav_contact_me: "Написати мені",
-            nav_request_project: "Замовити проект",
-            hero_title: "Візуальний сторітеллінг для <br> <span style='color: var(--color-secondary);'>амбітних брендів та людей.</span>",
-            hero_sub: "Я допомагаю брендам, видавництвам та музикантам перетворювати складні ідеї на виразні візуальні наративи. Стратегічна ілюстрація, що перетворює увагу на запити.",
-            hero_cta_request: "Замовити проект",
-            hero_cta_view: "Дивитися кейси",
-            badge_available: "Доступний для Q4 2023",
-            social_trusted: "Нам довіряють:",
-            services_title: "Фокус та Послуги",
-            services_sub: "Оберіть категорію, щоб переглянути відповідні приклади.",
-            service_ed_title: "Книги та Едіторіал",
-            service_ed_sub: "Обкладинки книг, ілюстрації для видавництв та концептуальний едіторіал для журналів.",
-            service_ed_cta: "Дивитись приклади",
-            service_brand_title: "Брендова ілюстрація",
-            service_brand_sub: "Брендова ілюстрація для пакування, продуктів та фізичних просторів.",
-            service_brand_cta: "Дивитись роботи для брендів",
-            service_poster_title: "Обкладинки та Постери",
-            service_poster_sub: "Повний візуальний супровід релізів — обкладинки, вініл, мерч та постери.",
-            service_poster_cta: "Дивитись приклади",
-            work_title: "Обрані роботи",
-            work_sub: "Кураторська добірка комерційних проектів з вимірними результатами.",
-            about_title: "Привіт, я <span style='color: black'>A</span><span style='color: #E6C300'>l</span><span style='color: black'>e</span><span style='color: var(--color-alert)'>x</span> <span style='color: var(--color-secondary)'>V</span><span style='color: black'>e</span><span style='color: var(--color-accent)'>l</span><span style='color: #E6C300'>b</span><span style='color: black'>o</span><span style='color: #E6C300'>y</span>",
-            about_sub: "I'm Alex Velboy — a Europe-based illustrator & visual artist.",
-            about_sub_2: "I work with brands, editors, and creative teams who want visuals with a clear idea — not just something \"nice\"",
-            about_sub_3: "My superpower is absurd thinking with precision: I take a brief, find the weird truth inside it, and push it until the concept clicks hard — visually, emotionally, and strategically.",
-            about_sub_4: "Human detail, because I'm not a PDF: I've wanted to be an artist since I was a kid. Somehow it worked out — and now my favorite part is taking wild concepts and turning them into something real: campaigns, spaces, covers, murals, installations, an object you can touch and visuals you can actually live with.",
-            faq_title: "Часті запитання",
-            faq1_question: "How long does a project usually take?",
-            faq1_answer: "Small projects (e.g., one illustration) typically take about one week. Bigger projects usually take 2–4 weeks, depending on scope.",
-            faq2_question: "How many concepts do you provide?",
-            faq2_answer: "At the start, we align on the idea and I deliver two fully developed concept sketches. Each concept comes with its own story, meaning, and visual logic.",
-            faq3_question: "How many revision rounds are included?",
-            faq3_answer: "We lock the direction at the sketch/concept stage, then I refine it with your feedback while keeping the overall vision consistent. Small tweaks and clarifications are included (up to ~10), but the final artistic direction stays with me.",
-            faq4_question: "Do you deliver source files?",
-            faq4_answer: "Yes — I provide the files you need for your use case, including print-ready and high-resolution digital versions. Source files can be included when required and agreed in advance.",
-            faq5_question: "What does your process look like, step by step?",
-            faq5_answer: "We start with a call to explore the idea, goals, and best execution options, then sign a contract. If it’s a physical space, I visit (or work from materials), build a plan, share the initial vision, and then deliver final files.",
-            faq6_question: "How does pricing and payment work (deposit, milestones)?",
-            faq6_answer: "I work with a 50% deposit for projects of any size. Payment terms are clearly stated in the contract we sign before starting.",
-            faq7_question: "Do you take rush projects?",
-            faq7_answer: "Yes, rush projects are possible depending on my schedule. Timeline and rush fee are discussed individually.",
-            faq8_question: "What do you need from me to get started?",
-            faq8_answer: "A quick conversation about what you have and what you want to achieve, plus access to your materials or space (if applicable). After that, I take the lead and handle the process.",
-            faq9_question: "Can we work together if my business is in another country?",
-            faq9_answer: "Absolutely — I work internationally and we can run everything via calls, messages, and mockups. For physical applications, I prepare clear production-ready files and guides tailored to your format.",
-            faq10_question: "Can we plan a long-term collaboration?",
-            faq10_answer: "Yes — long-term projects are welcome once we align on the scope, timeline, and working rhythm. I can lead the visual direction as an art director throughout the collaboration.",
-            contact_title: "Обговоримо ваш проект.",
-            contact_sub: "Open for selected commissions. Share a few details — I’ll respond with a clear plan.",
-            services_list_title: "Послуги та Формати",
-            service_item1_title: "Системи ілюстрацій для брендів",
-            service_item1_sub: "Ключовий візуал + активи",
-            service_item2_title: "Пакування та фізичні товари",
-            service_item2_sub: "Готові до друку файли",
-            service_item3_title: "Книжкова та журнальна ілюстрація",
-            service_item3_sub: "концепт + ілюстрація",
-            service_item4_title: "Активи для анімації",
-            service_item4_sub: "Пошарові сорс-файли",
-            services_minimum_title: "Мінімальне замовлення: $300 USD",
-            services_minimum_sub: "Гарантує присвячений час та фокус на вашому брифi.",
-            services_card_title: "I’m cool (professionally).",
-            services_card_p1: "I art-direct the whole project. From concept to final files.",
-            services_card_p2: "I build the concept, define the visual direction, and lead it all the way through — your team can jump in for technical tweaks when needed.",
-            services_card_p3: "My job is to turn ideas into real, physical touchpoints that people notice, remember, and want to engage with.",
-            services_card_p4: "Strong visuals don’t just look good — they improve attention, perception, and conversion across the funnel.",
-            work_portfolio_cta: "Дивитися повне портфоліо",
-            download_pdf: "Завантажити PDF",
-            usp_title: "Чому клієнти обирают роботу зі мною",
-            usp1_title: "Концептуальний підхід",
-            usp1_text: "Я перетворюю складні ідеї на чисті візуальні образи, що швидко комунікують — ідеально для рекламних кампаній, обкладинок та пакування.",
-            usp2_title: "Готові до виробництва файли",
-            usp2_text: "Файли, готові до друку (CMYK) та вебу, організовані для негайного використання дизайнерами та друкарями.",
-            usp3_title: "Надійні терміни",
-            usp3_text: "Ви завжди знаєте, що далі: чекпоінти, правки та терміни здачі чітко визначені.",
-            testimonials_title: "Що кажуть люди",
-            t1_quote: "Алекс — справжня знахідка. Він не просто малює, а глибоко занурюється в саму суть повідомлення бренду.",
-            t1_author: "Сара Дженкінс",
-            t1_role: "Арт-директор, Monocle",
-            t2_quote: "Терміни виконання були неймовірно швидкими, а якість — на найвищому рівні. Ідеально для нашої кампанії.",
-            t2_author: "Маркус Торн",
-            t2_role: "Провідний дизайнер, Spotify",
-            t3_quote: "Його концептуальний підхід перетворив звичайний бриф на візуальний шедевр. Дуже рекомендую!",
-            t3_author: "Олена Россі",
-            t3_role: "Засновниця, Книголав",
-            form_name: "Ім'я",
-            form_email: "Email",
-            form_project_type: "Тип проекту",
-            form_category_placeholder: "Оберіть категорію...",
-            form_ed: "Едіторіал ілюстрація",
-            form_brand: "Брендова ілюстрація",
-            form_pkg: "Упаковка",
-            form_book: "Обкладинка книги",
-            form_album: "Обкладинка альбому",
-            form_other: "Інше",
-            form_budget: "Приблизний бюджет",
-            form_budget_placeholder: "Оберіть діапазон...",
-            form_details: "Деталі проекту",
-            form_details_placeholder: "Коротко опишіть, що вам потрібно...",
-            form_submit: "Надіслати запит",
-            social_tg: "Telegram",
-            social_wa: "WhatsApp"
+    const langBtns = document.querySelectorAll('.lang-btn');
+    const baseUrl = new URL('.', window.location.href);
+    const translationPaths = {
+        en: [
+            new URL('src/i18n/translations/en.json', baseUrl).href,
+            '/src/i18n/translations/en.json'
+        ],
+        ua: [
+            new URL('src/i18n/translations/ua.json', baseUrl).href,
+            '/src/i18n/translations/ua.json'
+        ]
+    };
+    const translations = {};
+
+    const fetchJson = async (path) => {
+        try {
+            const response = await fetch(path, { cache: 'no-store' });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.warn(`Fetch failed for ${path}.`, error);
+            return null;
         }
     };
 
-    const langBtns = document.querySelectorAll('.lang-btn');
+    const loadInlineTranslations = (lang) => {
+        const scriptEl = document.getElementById(`i18n-${lang}`);
+        if (!scriptEl) return null;
+        try {
+            return JSON.parse(scriptEl.textContent);
+        } catch (error) {
+            console.warn(`Inline JSON parse failed for ${lang}.`, error);
+            return null;
+        }
+    };
+
+    const loadJsonViaXhr = (path) => new Promise((resolve) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', path, true);
+        xhr.overrideMimeType('application/json');
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                try {
+                    resolve(JSON.parse(xhr.responseText));
+                } catch (error) {
+                    console.warn(`XHR JSON parse failed for ${path}.`, error);
+                    resolve(null);
+                }
+            } else {
+                resolve(null);
+            }
+        };
+        xhr.onerror = () => resolve(null);
+        xhr.send();
+    });
+
+    const loadTranslations = async () => {
+        await Promise.all(Object.entries(translationPaths).map(async ([lang, paths]) => {
+            const inlineData = loadInlineTranslations(lang);
+            if (inlineData) {
+                translations[lang] = inlineData;
+                return;
+            }
+
+            for (const path of paths) {
+                const data = await fetchJson(path) || await loadJsonViaXhr(path);
+                if (data) {
+                    translations[lang] = data;
+                    break;
+                }
+            }
+
+            if (!translations[lang]) {
+                console.error(`Failed to load translations for ${lang}.`);
+            }
+        }));
+    };
+
+    const getTranslation = (lang, key) => {
+        if (!translations[lang]) return null;
+        return translations[lang][key] ?? null;
+    };
 
     function setLanguage(lang) {
+        if (!translations[lang]) return;
+
+        document.documentElement.lang = lang;
+
         // Toggle Active Class
         langBtns.forEach(btn => {
             if (btn.getAttribute('data-lang') === lang) {
@@ -343,14 +209,24 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update Text Content
         document.querySelectorAll('[data-i18n]').forEach(element => {
             const key = element.getAttribute('data-i18n');
-            if (translations[lang] && translations[lang][key]) {
-                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                    element.placeholder = translations[lang][key];
-                } else if (key.includes('title') || key.includes('hero')) {
-                    element.innerHTML = translations[lang][key];
-                } else {
-                    element.textContent = translations[lang][key];
-                }
+            const value = getTranslation(lang, key);
+            if (!value) return;
+
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                element.placeholder = value;
+            } else if (element.hasAttribute('data-i18n-html')) {
+                element.innerHTML = value;
+            } else {
+                element.textContent = value;
+            }
+        });
+
+        // Update ARIA labels
+        document.querySelectorAll('[data-i18n-aria]').forEach(element => {
+            const key = element.getAttribute('data-i18n-aria');
+            const value = getTranslation(lang, key);
+            if (value) {
+                element.setAttribute('aria-label', value);
             }
         });
 
@@ -377,9 +253,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Load saved preference
-    const savedLang = localStorage.getItem('preferredLang') || 'en';
-    setLanguage(savedLang);
+    const translationsReady = loadTranslations().then(() => {
+        const savedLang = localStorage.getItem('preferredLang') || 'en';
+        setLanguage(savedLang);
+    });
 
     /* 5. Header CTA Scroll Logic */
     const headerCta = document.getElementById('header-cta');
@@ -388,22 +265,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (headerCta && heroSection) {
         const updateHeaderCta = () => {
             const lang = localStorage.getItem('preferredLang') || 'en';
+            const nextKey = window.scrollY > 400 ? 'nav_request_project' : 'nav_contact_me';
+            const nextText = getTranslation(lang, nextKey);
+
             if (window.scrollY > 400) {
                 headerCta.classList.add('scrolled');
-                headerCta.textContent = translations[lang].nav_request_project;
             } else {
                 headerCta.classList.remove('scrolled');
-                headerCta.textContent = translations[lang].nav_contact_me;
             }
-            // Re-apply data-i18n attribute for the current state
-            headerCta.setAttribute('data-i18n', window.scrollY > 400 ? 'nav_request_project' : 'nav_contact_me');
+
+            if (nextText) {
+                headerCta.textContent = nextText;
+            }
+            headerCta.setAttribute('data-i18n', nextKey);
         };
 
         window.addEventListener('scroll', updateHeaderCta);
-        // Initial call to set correct text on load
-        updateHeaderCta();
 
-        // Listen for language changes to update this button immediately
+        translationsReady.then(() => {
+            updateHeaderCta();
+        });
+
         langBtns.forEach(btn => {
             btn.addEventListener('click', updateHeaderCta);
         });
@@ -427,6 +309,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const successMessage = contactForm.querySelector('#form-success');
             const errorMessage = contactForm.querySelector('#form-error');
             const honeypot = contactForm.querySelector('input[name="website"]');
+            const lang = localStorage.getItem('preferredLang') || 'en';
+            const successText = getTranslation(lang, 'form_success_text') || '✅ Sent';
+            const errorText = getTranslation(lang, 'form_error_text') || '❌ Error';
+            const loadingText = getTranslation(lang, 'form_submit_loading') || 'Sending...';
+            const receiptPending = getTranslation(lang, 'form_success_receipt_pending') || '';
 
             if (successMessage) {
                 successMessage.classList.add('hidden');
@@ -438,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (honeypot && honeypot.value.trim()) {
                 contactForm.reset();
                 if (successMessage) {
-                    successMessage.textContent = "Sent ✅";
+                    successMessage.textContent = successText;
                     successMessage.classList.remove('hidden');
                 }
                 if (errorMessage) {
@@ -451,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Show loading state
-            submitBtn.textContent = "Sending…";
+            submitBtn.textContent = loadingText;
             submitBtn.disabled = true;
 
             const formData = new FormData(contactForm);
@@ -479,8 +366,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok && result.ok === true) {
                     contactForm.reset();
                     if (successMessage) {
-                        const receiptNote = result.receipt_ok === false ? " (receipt pending)" : "";
-                        successMessage.textContent = `Sent ✅${receiptNote}`;
+                        const receiptNote = result.receipt_ok === false ? receiptPending : "";
+                        successMessage.textContent = `${successText}${receiptNote}`;
                         successMessage.classList.remove('hidden');
                     }
                     if (errorMessage) {
@@ -489,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log('Contact form submitted successfully.');
                 } else {
                     if (errorMessage) {
-                        errorMessage.textContent = result.error ? `Error ❌ ${result.error}` : "Error ❌";
+                        errorMessage.textContent = result.error ? `${errorText} ${result.error}` : errorText;
                         errorMessage.classList.remove('hidden');
                     }
                     if (successMessage) {
@@ -499,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 if (errorMessage) {
-                    errorMessage.textContent = "Error ❌";
+                    errorMessage.textContent = errorText;
                     errorMessage.classList.remove('hidden');
                 }
                 if (successMessage) {
@@ -880,24 +767,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = input.toLowerCase();
         const lang = localStorage.getItem('preferredLang') || 'en';
 
-        const responses = {
-            en: {
-                price: "Alex's projects usually start at $300 USD. This ensures high quality and dedicated time for each brief.",
-                services: "Alex offers Brand Illustration, Packaging Design, Book & Editorial Illustration, and Posters.",
-                process: "The process has 4 steps: Discovery, Concepts, Refinement, and Final Delivery. You can see more in the 'Process' section!",
-                contact: "You can reach Alex at itsme@alexvelboy.com or via the contact form on this page.",
-                default: "That's a great question! I'm just an AI assistant, but you can find more details in the sections above, or email Alex directly at itsme@alexvelboy.com."
-            },
-            ua: {
-                price: "Проекти Алекса зазвичай стартують від $300 USD. Це гарантує високу якість та присвячений час для кожного брифу.",
-                services: "Алекс пропонує брендову ілюстрацію, дизайн пакування, книжкову та журнальну ілюстрацію, а також постери.",
-                process: "Процес складається з 4 кроків: Дослідження, Концепти, Доопрацювання та Фінальна здача. Більше деталей у розділі 'Процес'!",
-                contact: "Ви можете написати Алексу на itsme@alexvelboy.com або заповнити форму зворотного зв'язку.",
-                default: "Гарне питання! Я лише AI-помічник, але ви можете знайти більше деталей у розділах вище або написати Алексу прямо на itsme@alexvelboy.com."
-            }
-        };
-
-        const current = responses[lang];
+        const current = translations[lang] && translations[lang].chat_responses
+            ? translations[lang].chat_responses
+            : {
+                price: "Projects usually start at $300 USD.",
+                services: "Brand illustration, packaging, book & editorial illustration, and posters.",
+                process: "The process has 4 steps: Discovery, Concepts, Refinement, and Final Delivery.",
+                contact: "You can reach Alex at itsme@alexvelboy.com or via the contact form.",
+                default: "Thanks for the question. Please check the sections above or email Alex at itsme@alexvelboy.com."
+            };
 
         if (text.includes('price') || text.includes('cost') || text.includes('цін') || text.includes('варто')) return current.price;
         if (text.includes('service') || text.includes('do') || text.includes('послуг') || text.includes('робиш')) return current.services;
