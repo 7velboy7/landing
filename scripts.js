@@ -514,34 +514,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* 7. Kooperativ Sliders */
-    const kooperativSlider = document.getElementById('kooperativ-slider');
-    if (kooperativSlider && kooperativSlider.dataset.dragInit !== '1') {
-        kooperativSlider.dataset.dragInit = '1';
+    /* 7. Case Sliders */
+    const initCaseSlider = (config) => {
+        const {
+            root,
+            track,
+            slides,
+            dotsContainer,
+            ignoreSelector
+        } = config;
 
-        const cards = Array.from(kooperativSlider.querySelectorAll('.kooperativ-card'));
-        const carousels = Array.from(kooperativSlider.querySelectorAll('.kooperativ-image-carousel'));
-        const dotsContainer = document.querySelector('#top-slider-dots-slot .top-slider-dots');
-        const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.dot')) : [];
-        const firstCard = cards[0];
-        let cardWidth = firstCard ? firstCard.getBoundingClientRect().width : kooperativSlider.clientWidth;
+        if (!root || !track || !slides.length) return;
+        if (root.dataset.dragInit === '1') return;
+        root.dataset.dragInit = '1';
 
-        const updateCardWidth = () => {
-            cardWidth = firstCard ? firstCard.getBoundingClientRect().width : kooperativSlider.clientWidth;
-        };
-
+        let index = 0;
+        let slideWidth = root.getBoundingClientRect().width;
+        let startX = 0;
+        let startY = 0;
+        let currentTranslate = 0;
+        let prevTranslate = 0;
         let isDragging = false;
         let dragActive = false;
-        let startX = 0;
-        let startScrollLeft = 0;
         let rafId = null;
-        let moved = false;
-        let scrollRaf = null;
+        const threshold = 9;
 
-        const updateDots = (index) => {
+        const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.dot')) : [];
+
+        const setTranslate = (value, animate) => {
+            track.style.transition = animate ? 'transform 0.45s ease' : 'none';
+            track.style.transform = `translate3d(${value}px, 0, 0)`;
+        };
+
+        const updateDots = (activeIndex) => {
             if (!dots.length) return;
             dots.forEach((dot, idx) => {
-                const isActive = idx === index;
+                const isActive = idx === activeIndex;
                 dot.classList.toggle('is-active', isActive);
                 if (isActive) {
                     dot.setAttribute('aria-current', 'true');
@@ -551,45 +559,43 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
-        const getActiveIndex = () => {
-            if (!cardWidth) return 0;
-            return Math.round(kooperativSlider.scrollLeft / cardWidth);
+        const clampIndex = (value) => Math.max(0, Math.min(value, slides.length - 1));
+
+        const snapTo = (nextIndex, animate = true) => {
+            index = clampIndex(nextIndex);
+            slideWidth = root.getBoundingClientRect().width;
+            currentTranslate = -index * slideWidth;
+            prevTranslate = currentTranslate;
+            setTranslate(currentTranslate, animate);
+            updateDots(index);
         };
 
         const onPointerDown = (event) => {
             if (event.button !== undefined && event.button !== 0) return;
-            if (event.target.closest('.kooperativ-image-carousel')) return;
+            if (ignoreSelector && event.target.closest(ignoreSelector)) return;
             if (event.target.closest('a, button, input, textarea, select, label, .cta-discuss')) return;
             isDragging = true;
             dragActive = false;
-            moved = false;
             startX = event.clientX;
-            startScrollLeft = kooperativSlider.scrollLeft;
-            kooperativSlider.classList.add('is-dragging');
-            kooperativSlider.setPointerCapture(event.pointerId);
+            startY = event.clientY;
+            root.setPointerCapture(event.pointerId);
         };
 
         const onPointerMove = (event) => {
             if (!isDragging) return;
             const dx = event.clientX - startX;
-            if (Math.abs(dx) > 8) {
-                moved = true;
+            const dy = event.clientY - startY;
+
+            if (!dragActive) {
+                if (Math.abs(dx) < threshold || Math.abs(dx) < Math.abs(dy)) return;
                 dragActive = true;
             }
-            if (!dragActive) return;
+
             if (rafId) return;
             rafId = requestAnimationFrame(() => {
                 rafId = null;
-                kooperativSlider.scrollLeft = startScrollLeft - dx;
-            });
-        };
-
-        const snapToNearest = () => {
-            if (!cardWidth) return;
-            const targetIndex = Math.round(kooperativSlider.scrollLeft / cardWidth);
-            kooperativSlider.scrollTo({
-                left: targetIndex * cardWidth,
-                behavior: 'smooth'
+                currentTranslate = prevTranslate + dx;
+                setTranslate(currentTranslate, false);
             });
         };
 
@@ -597,57 +603,48 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isDragging) return;
             isDragging = false;
             dragActive = false;
-            kooperativSlider.classList.remove('is-dragging');
             if (event.pointerId !== undefined) {
-                kooperativSlider.releasePointerCapture(event.pointerId);
+                root.releasePointerCapture(event.pointerId);
             }
-            snapToNearest();
+            const movedBy = currentTranslate - prevTranslate;
+            if (Math.abs(movedBy) > threshold) {
+                const direction = movedBy < 0 ? 1 : -1;
+                snapTo(index + direction, true);
+            } else {
+                snapTo(index, true);
+            }
         };
 
-        const moveEvent = 'onpointerrawupdate' in window ? 'pointerrawupdate' : 'pointermove';
-        kooperativSlider.addEventListener('pointerdown', onPointerDown);
-        kooperativSlider.addEventListener(moveEvent, onPointerMove);
-        kooperativSlider.addEventListener('pointerup', onPointerUp);
-        kooperativSlider.addEventListener('pointercancel', onPointerUp);
-        kooperativSlider.addEventListener('lostpointercapture', onPointerUp);
+        root.addEventListener('pointerdown', onPointerDown);
+        root.addEventListener('pointermove', onPointerMove);
+        root.addEventListener('pointerup', onPointerUp);
+        root.addEventListener('pointercancel', onPointerUp);
+        root.addEventListener('lostpointercapture', onPointerUp);
 
-        kooperativSlider.addEventListener('click', (event) => {
-            if (!moved) return;
-            if (event.target.closest('a, button, input, textarea, select, label')) return;
-            if (event.target.closest('.cta-discuss')) return;
-            {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        }, true);
-
-        kooperativSlider.addEventListener('scroll', () => {
-            if (scrollRaf) return;
-            scrollRaf = requestAnimationFrame(() => {
-                scrollRaf = null;
-                updateDots(getActiveIndex());
-            });
-        }, { passive: true });
-
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                kooperativSlider.scrollTo({
-                    left: index * cardWidth,
-                    behavior: 'smooth'
-                });
-                updateDots(index);
-            });
+        dots.forEach((dot, dotIndex) => {
+            dot.addEventListener('click', () => snapTo(dotIndex, true));
         });
 
-        carousels.forEach((carousel) => {
-            carousel.addEventListener('pointerdown', (event) => {
-                event.stopPropagation();
-            });
-        });
+        window.addEventListener('resize', () => snapTo(index, false));
+        snapTo(0, false);
+    };
 
-        window.addEventListener('resize', updateCardWidth);
-        updateDots(getActiveIndex());
-    }
+    const kooperativRoot = document.getElementById('kooperativ-slider');
+    initCaseSlider({
+        root: kooperativRoot,
+        track: kooperativRoot ? kooperativRoot.querySelector('.kooperativ-track') : null,
+        slides: kooperativRoot ? Array.from(kooperativRoot.querySelectorAll('.kooperativ-card')) : [],
+        dotsContainer: document.querySelector('#top-slider-dots-slot .top-slider-dots'),
+        ignoreSelector: '.kooperativ-image-carousel'
+    });
+
+    const futureRoot = document.getElementById('future-echoes-slider');
+    initCaseSlider({
+        root: futureRoot,
+        track: futureRoot ? futureRoot.querySelector('.future-track') : null,
+        slides: futureRoot ? Array.from(futureRoot.querySelectorAll('.future-slide')) : [],
+        dotsContainer: document.querySelector('#lower-cases .future-slider-dots')
+    });
 
     /* 8. Audio Playback Logic (Final Step - Lightning) */
     const finalStep = document.getElementById('final-step');
