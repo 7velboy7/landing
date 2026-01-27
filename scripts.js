@@ -1094,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return current[intent];
         }
 
-        if (matchesAny(text, [/price|cost|pricing|скільки|ціна|цена|стоим|варт|budget|бюджет/i])) {
+        if (matchesAny(text, [/how much|price|cost|pricing|скільки|ціна|цена|стоим|варт|budget|бюджет/i])) {
             return current.pricing_general || current.price;
         }
         if (matchesAny(text, [/service|services|послуг|услуг|what do you do|що робиш|чим займаєшся|what you do/i])) {
