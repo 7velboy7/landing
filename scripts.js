@@ -767,24 +767,345 @@ document.addEventListener('DOMContentLoaded', () => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    const defaultChatResponses = {
+        price: "Projects usually start at $300 USD.",
+        services: "Brand illustration, packaging, book & editorial illustration, and posters.",
+        process: "The process has 4 steps: Discovery, Concepts, Refinement, and Final Delivery.",
+        contact: "You can reach Alex at itsme@alexvelboy.com or via the contact form.",
+        default: "Thanks for the question. Please check the sections above or email Alex at itsme@alexvelboy.com."
+    };
+
+    const intentPatterns = [
+        {
+            key: 'contact_telegram',
+            patterns: [/telegram|телеграм|телег|\btg\b|\bтг\b|t\.?me/i]
+        },
+        {
+            key: 'contact_email',
+            patterns: [/\bemail\b|e-mail|почт|пошт|мейл|mail/i]
+        },
+        {
+            key: 'contact_phone_whatsapp',
+            patterns: [/whatsapp|ватсап|вотсап|телефон|номер|phone|mobile|мобил/i]
+        },
+        {
+            key: 'contact_instagram',
+            patterns: [/instagram|insta|інста|инста/i]
+        },
+        {
+            key: 'contact_fastest',
+            patterns: [/fastest|quickest|швидш|быстр/i]
+        },
+        {
+            key: 'contact_call',
+            patterns: [/call|созвон|дзвінок|звонок|call you|phone call|созван/i]
+        },
+        {
+            key: 'contact_manager',
+            patterns: [/manager|менеджер|арт-менеджер|art manager/i]
+        },
+        {
+            key: 'order_apply_now',
+            patterns: [/(apply|submit).*(now)/i, /можна\s+зараз/i, /можем\s+сейчас/i, /можно\s+сейчас/i]
+        },
+        {
+            key: 'order_where_form',
+            patterns: [/where.*form|де.*форма|где.*форма|форма.*сайт|contact form/i]
+        },
+        {
+            key: 'order_where_click',
+            patterns: [/where.*click|куди.*натис|куда.*наж|which button|кнопк/i]
+        },
+        {
+            key: 'order_how',
+            patterns: [/how to order|як замов|как заказ|start project|хочу замов|хочу заказать|как начать|how do we start/i]
+        },
+        {
+            key: 'pricing_book_cover',
+            patterns: [/book cover.*(price|cost|скільки|цена)|price.*book cover|обкладин.*книг|обложк.*книг/i]
+        },
+        {
+            key: 'pricing_album_cover',
+            patterns: [/album cover.*(price|cost|скільки|цена)|price.*album|обкладин.*альбом|обложк.*альбом/i]
+        },
+        {
+            key: 'pricing_brand_series',
+            patterns: [/brand series|series.*illustration|сері[яи].*ілюстр|серия.*иллюстр/i]
+        },
+        {
+            key: 'pricing_mural',
+            patterns: [/mural|мурал|стіна|стен(а|у)|wall painting/i]
+        },
+        {
+            key: 'pricing_prepayment',
+            patterns: [/prepay|pre-payment|deposit|предоплат|передоплат|аванс/i]
+        },
+        {
+            key: 'pricing_fixed_or_hourly',
+            patterns: [/hourly|per hour|почас|годин|hour rate|fixed price|фиксирован|фіксован/i]
+        },
+        {
+            key: 'pricing_budget_options',
+            patterns: [/options|packages|пакет|вариант|сценар|base|standard|extended/i]
+        },
+        {
+            key: 'pricing_included',
+            patterns: [/what'?s included|what is included|що входить|що включено|что входит|входит ли/i]
+        },
+        {
+            key: 'pricing_cheaper',
+            patterns: [/cheaper|дешевле|знижк|скидк|budget|бюджет|менш|less cost/i]
+        },
+        {
+            key: 'pricing_minimum',
+            patterns: [/minimum|min price|мінімальн|минимальн|starting from|from €|від €|от €|cheapest|найдешев|дешев|дешёв|самая минимальная|from what price|от какой цены|від якої ціни/i]
+        },
+        {
+            key: 'pricing_rates',
+            patterns: [/rate|rates|ставк|тариф|pricing rates|price list|pricelist|прайс/i]
+        },
+        {
+            key: 'process_timeline',
+            patterns: [/timeline|timeframe|how long|скільки часу|сколько времени|термін|сроки/i]
+        },
+        {
+            key: 'process_availability',
+            patterns: [/availability|available|вільн|свободн|коли старт|when start|дата старт|when can/i]
+        },
+        {
+            key: 'process_revisions',
+            patterns: [/revision|revisions|правк|правки|edits|changes|скільки правок|how many revisions/i]
+        },
+        {
+            key: 'process_sketches',
+            patterns: [/sketch|sketches|ескіз|скетч/i]
+        },
+        {
+            key: 'process_rush',
+            patterns: [/rush|urgent|термінов|срочн|fast/i]
+        },
+        {
+            key: 'process_contract',
+            patterns: [/contract|договір|договор/i]
+        },
+        {
+            key: 'process_invoice',
+            patterns: [/invoice|інвойс|рахунок|счет/i]
+        },
+        {
+            key: 'process_start_requirements',
+            patterns: [/what.*need.*start|to start.*need|для старту|що потрібно для старту|что нужно для старта/i]
+        },
+        {
+            key: 'process_need_brief',
+            patterns: [/need.*brief|нужно тз|потрібен бриф|brief required|тз нужно/i]
+        },
+        {
+            key: 'process_help_brief',
+            patterns: [/help.*brief|допомож.*бриф|помог.*бриф/i]
+        },
+        {
+            key: 'process_refs',
+            patterns: [/references|reference|референс|приклад|inspiration/i]
+        },
+        {
+            key: 'process_prep_call',
+            patterns: [/prep call|before call|перед дзвінком|before the call|call prep/i]
+        },
+        {
+            key: 'process_dont_know',
+            patterns: [/don't know|do not know|not sure|не знаю|не уверен|не впевнен/i]
+        },
+        {
+            key: 'rights_source_files',
+            patterns: [/source files|исходн|вихідн|psd|ai|source/i]
+        },
+        {
+            key: 'rights_exclusive',
+            patterns: [/exclusive|ексклюз|эксклюз|buyout|выкуп/i]
+        },
+        {
+            key: 'rights_merch',
+            patterns: [/merch|мерч|товар|merchandise/i]
+        },
+        {
+            key: 'rights_print',
+            patterns: [/print|друк|печать/i]
+        },
+        {
+            key: 'rights_ads',
+            patterns: [/ads|advert|реклама|ad use/i]
+        },
+        {
+            key: 'rights_buy_more_later',
+            patterns: [/extend|upgrade|додатков|пізніше|later|расширить/i]
+        },
+        {
+            key: 'rights_formats',
+            patterns: [/formats?|формат/i]
+        },
+        {
+            key: 'rights_cmyk_rgb',
+            patterns: [/cmyk|rgb/i]
+        },
+        {
+            key: 'rights_pdf_print',
+            patterns: [/pdf.*print|print.*pdf/i]
+        },
+        {
+            key: 'rights_prepress',
+            patterns: [/prepress|pre-press|типограф|print house/i]
+        },
+        {
+            key: 'rights_mockups',
+            patterns: [/mockup|мокап/i]
+        },
+        {
+            key: 'rights_size_resolution',
+            patterns: [/resolution|dpi|size|розмір|разрешен|роздільн/i]
+        },
+        {
+            key: 'rights_ownership',
+            patterns: [/ownership|copyright|права|авторськ|право/i]
+        },
+        {
+            key: 'work_book_covers',
+            patterns: [/book cover|обкладин.*книг|обложк.*книг/i]
+        },
+        {
+            key: 'work_album_covers',
+            patterns: [/album cover|album art|обкладин.*альбом|обложк.*альбом/i]
+        },
+        {
+            key: 'work_brand_packaging',
+            patterns: [/brand.*illustration|brand.*packaging|бренд.*ілюстр|бренд.*упаков|packaging|пакуван|упаков/i]
+        },
+        {
+            key: 'work_editorial',
+            patterns: [/editorial|едітор|редакц|журнал/i]
+        },
+        {
+            key: 'work_characters',
+            patterns: [/character|персонаж|сет-дизайн|set design/i]
+        },
+        {
+            key: 'work_style_like_x',
+            patterns: [/style like|exact style|copy style|в стиле|у стилі|как у|як у|под референс|під референс/i]
+        },
+        {
+            key: 'work_agencies',
+            patterns: [/agency|агенц|агентств/i]
+        },
+        {
+            key: 'work_projects_not_taken',
+            patterns: [/not take|don't take|не беру|не берете|не робите|не делаете|strict reference|exactly like/i]
+        },
+        {
+            key: 'work_commissions',
+            patterns: [/commission|custom|індив|индив|замовлен|заказ|commissioned/i]
+        },
+        {
+            key: 'work_projects_taken',
+            patterns: [/what.*projects|what.*do|які проєкти|які проекти|что делаете|какие проекты|what kind of work/i]
+        },
+        {
+            key: 'about_portfolio',
+            patterns: [/portfolio|портфоліо|портфолио/i]
+        },
+        {
+            key: 'about_from_ukraine',
+            patterns: [/from ukraine|з україни|из украины|ukrain/i]
+        },
+        {
+            key: 'about_location',
+            patterns: [/location|based|де ви|где вы|where are you/i]
+        },
+        {
+            key: 'about_style',
+            patterns: [/style|стиль|signature/i]
+        },
+        {
+            key: 'about_values',
+            patterns: [/values|цінност|ценност|values/i]
+        },
+        {
+            key: 'about_clients',
+            patterns: [/clients|клієнт|клиент|brands worked|clients worked/i]
+        },
+        {
+            key: 'about_favorite_projects',
+            patterns: [/favorite projects|улюблені проєкти|любимые проекты|favorite work/i]
+        },
+        {
+            key: 'about_favorite',
+            patterns: [/favorite|улюбл|любим|favorite part/i]
+        },
+        {
+            key: 'trust_why_expensive',
+            patterns: [/expensive|дорог|дорого|too expensive/i]
+        },
+        {
+            key: 'trust_why_you',
+            patterns: [/why you|чому ви|почему вы|why choose you|why should/i]
+        },
+        {
+            key: 'trust_how_sure',
+            patterns: [/how sure|насколько уверен|наскільки впев|sure of result|гарант/i]
+        },
+        {
+            key: 'trust_if_dislike',
+            patterns: [/if i don't like|if dislike|не сподоба|не понрав/i]
+        },
+        {
+            key: 'trust_reviews',
+            patterns: [/reviews|відгук|отзыв/i]
+        },
+        {
+            key: 'trust_deadline_guarantee',
+            patterns: [/deadline.*guarantee|guarantee.*deadline|гарант.*термін|гарант.*срок/i]
+        },
+        {
+            key: 'contact_how_to_reach',
+            patterns: [/contact|reach you|how to reach|як зв[’']?яз|как связ|контакт|пошт|почт/i]
+        }
+    ];
+
+    const matchesAny = (text, patterns) => patterns.some((pattern) => pattern.test(text));
+
+    const findIntent = (text) => {
+        for (const intent of intentPatterns) {
+            if (matchesAny(text, intent.patterns)) {
+                return intent.key;
+            }
+        }
+        return null;
+    };
+
     function getBotResponse(input) {
-        const text = input.toLowerCase();
+        const text = input.toLowerCase().replace(/\s+/g, ' ').trim();
         const lang = localStorage.getItem('preferredLang') || 'en';
 
         const current = translations[lang] && translations[lang].chat_responses
             ? translations[lang].chat_responses
-            : {
-                price: "Projects usually start at $300 USD.",
-                services: "Brand illustration, packaging, book & editorial illustration, and posters.",
-                process: "The process has 4 steps: Discovery, Concepts, Refinement, and Final Delivery.",
-                contact: "You can reach Alex at itsme@alexvelboy.com or via the contact form.",
-                default: "Thanks for the question. Please check the sections above or email Alex at itsme@alexvelboy.com."
-            };
+            : defaultChatResponses;
 
-        if (text.includes('price') || text.includes('cost') || text.includes('цін') || text.includes('варто')) return current.price;
-        if (text.includes('service') || text.includes('do') || text.includes('послуг') || text.includes('робиш')) return current.services;
-        if (text.includes('process') || text.includes('how') || text.includes('процес') || text.includes('як')) return current.process;
-        if (text.includes('contact') || text.includes('email') || text.includes('контакт') || text.includes('пошт')) return current.contact;
+        const intent = findIntent(text);
+        if (intent && current[intent]) {
+            return current[intent];
+        }
+
+        if (matchesAny(text, [/price|cost|pricing|скільки|ціна|цена|стоим|варт|budget|бюджет/i])) {
+            return current.pricing_general || current.price;
+        }
+        if (matchesAny(text, [/service|services|послуг|услуг|what do you do|що робиш|чим займаєшся|what you do/i])) {
+            return current.services;
+        }
+        if (matchesAny(text, [/process|workflow|how we work|як працю|как работа|процес|етап/i])) {
+            return current.process;
+        }
+        if (matchesAny(text, [/contact|reach you|email|контакт|пошт|почт/i])) {
+            return current.contact_how_to_reach || current.contact;
+        }
 
         return current.default;
     }
