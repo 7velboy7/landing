@@ -25,6 +25,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const downloadButton = document.getElementById('download-portfolio');
+    if (downloadButton) {
+        downloadButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            const url = './portfolio.pdf';
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Alex_Velboy_Portfolio.pdf';
+            link.rel = 'noopener';
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        });
+    }
 
     /* 1. Mobile Menu Toggle */
     const menuBtn = document.getElementById('menu-toggle');
