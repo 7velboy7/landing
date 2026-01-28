@@ -615,6 +615,7 @@ img {
     height: 100%;
     position: relative;
     z-index: 1;
+    aspect-ratio: 1 / 1;
 }
 
 #kooperativ-slider .project-media .case-image-slider {

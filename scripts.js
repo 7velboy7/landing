@@ -427,7 +427,8 @@ document.addEventListener('DOMContentLoaded', () => {
             track,
             slides,
             dotsContainer,
-            ignoreSelector
+            ignoreSelector,
+            useScroll
         } = config;
 
         if (!root || !track || !slides.length) return;
@@ -448,6 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.dot')) : [];
 
         const setTranslate = (value, animate) => {
+            if (useScroll) return;
             track.style.transition = animate ? 'transform 0.45s ease' : 'none';
             track.style.transform = `translate3d(${value}px, 0, 0)`;
         };
@@ -472,7 +474,12 @@ document.addEventListener('DOMContentLoaded', () => {
             slideWidth = root.getBoundingClientRect().width;
             currentTranslate = -index * slideWidth;
             prevTranslate = currentTranslate;
-            setTranslate(currentTranslate, animate);
+            if (useScroll) {
+                const behavior = animate ? 'smooth' : 'auto';
+                root.scrollTo({ left: index * slideWidth, behavior });
+            } else {
+                setTranslate(currentTranslate, animate);
+            }
             updateDots(index);
         };
 
@@ -521,17 +528,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        root.addEventListener('pointerdown', onPointerDown);
-        root.addEventListener('pointermove', onPointerMove);
-        root.addEventListener('pointerup', onPointerUp);
-        root.addEventListener('pointercancel', onPointerUp);
-        root.addEventListener('lostpointercapture', onPointerUp);
+        if (!useScroll) {
+            root.addEventListener('pointerdown', onPointerDown);
+            root.addEventListener('pointermove', onPointerMove);
+            root.addEventListener('pointerup', onPointerUp);
+            root.addEventListener('pointercancel', onPointerUp);
+            root.addEventListener('lostpointercapture', onPointerUp);
+        }
 
         dots.forEach((dot, dotIndex) => {
             dot.addEventListener('click', () => snapTo(dotIndex, true));
         });
 
         window.addEventListener('resize', () => snapTo(index, false));
+        if (useScroll) {
+            let scrollRaf = null;
+            root.addEventListener('scroll', () => {
+                if (scrollRaf) return;
+                scrollRaf = requestAnimationFrame(() => {
+                    scrollRaf = null;
+                    slideWidth = root.getBoundingClientRect().width;
+                    const nextIndex = clampIndex(Math.round(root.scrollLeft / slideWidth));
+                    if (nextIndex !== index) {
+                        index = nextIndex;
+                        updateDots(index);
+                    }
+                });
+            }, { passive: true });
+        }
         snapTo(0, false);
     };
 
@@ -549,7 +573,8 @@ document.addEventListener('DOMContentLoaded', () => {
         root: futureRoot,
         track: futureRoot ? futureRoot.querySelector('.future-track') : null,
         slides: futureRoot ? Array.from(futureRoot.querySelectorAll('.future-slide')) : [],
-        dotsContainer: document.querySelector('#lower-cases .future-slider-dots')
+        dotsContainer: document.querySelector('#lower-cases .future-slider-dots'),
+        useScroll: true
     });
 
     /* 8. Audio Playback Logic (Final Step - Lightning) */
