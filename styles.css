@@ -694,18 +694,32 @@ section[data-slider="kooperativ"] .slider-dots {
 }
 
 .future-slider {
-    overflow: hidden;
-    touch-action: pan-y;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    cursor: ew-resize;
+    scroll-behavior: auto;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+    scrollbar-width: none;
 }
 
 .future-track {
     display: flex;
+    gap: var(--spacing-lg);
     will-change: transform;
     transition: transform 0.45s ease;
+    touch-action: pan-y;
 }
 
 .future-slide {
     flex: 0 0 100%;
+    scroll-snap-align: start;
+}
+
+.future-slider::-webkit-scrollbar {
+    display: none;
 }
 
 #lower-cases .future-slider-dots {
