@@ -1190,6 +1190,11 @@ body.fx-active #lightning-container {
     color: var(--color-primary);
 }
 
+.mobile-menu .lang-switch {
+    justify-content: center;
+    margin-top: 1rem;
+}
+
 /* LANGUAGE SWITCHER */
 .lang-switch {
     display: flex;
