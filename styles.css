@@ -791,6 +791,11 @@ section[data-slider="kooperativ"] .slider-hint {
         min-height: 520px;
     }
 
+    #kooperativ-slider {
+        overflow-x: hidden;
+        touch-action: pan-y;
+    }
+
     #kooperativ-slider .project--kooperativ .project-copy {
         height: auto;
     }
