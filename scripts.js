@@ -193,9 +193,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            if (!translations[lang]) {
-                const inlineData = loadInlineTranslations(lang);
-                if (inlineData) {
+            const inlineData = loadInlineTranslations(lang);
+            if (inlineData) {
+                if (translations[lang]) {
+                    Object.entries(inlineData).forEach(([key, value]) => {
+                        if (!(key in translations[lang])) {
+                            translations[lang][key] = value;
+                        }
+                    });
+                } else {
                     translations[lang] = inlineData;
                 }
             }
