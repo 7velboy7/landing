@@ -127,14 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const remoteTranslationsBase = 'https://pub-d6351097e47d49159f1c58b84eed5a4a.r2.dev';
     const translationPaths = {
         en: [
-            `${remoteTranslationsBase}/i18n/translations/en.json`,
             new URL('src/i18n/translations/en.json', baseUrl).href,
-            '/src/i18n/translations/en.json'
+            '/src/i18n/translations/en.json',
+            `${remoteTranslationsBase}/i18n/translations/en.json`
         ],
         ua: [
-            `${remoteTranslationsBase}/i18n/translations/ua.json`,
             new URL('src/i18n/translations/ua.json', baseUrl).href,
-            '/src/i18n/translations/ua.json'
+            '/src/i18n/translations/ua.json',
+            `${remoteTranslationsBase}/i18n/translations/ua.json`
         ]
     };
     const translations = {};
