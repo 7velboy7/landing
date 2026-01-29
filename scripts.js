@@ -574,7 +574,8 @@ document.addEventListener('DOMContentLoaded', () => {
         track: kooperativRoot ? kooperativRoot.querySelector('.kooperativ-track') : null,
         slides: kooperativRoot ? Array.from(kooperativRoot.querySelectorAll('.kooperativ-card')) : [],
         dotsContainer: document.querySelector('#top-slider-dots-slot .top-slider-dots'),
-        ignoreSelector: '.kooperativ-image-carousel'
+        ignoreSelector: '.kooperativ-image-carousel',
+        useScroll: true
     });
 
     const futureRoot = document.getElementById('future-echoes-slider');
