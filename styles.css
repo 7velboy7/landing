@@ -719,6 +719,7 @@ img {
     scroll-behavior: auto;
     overscroll-behavior-x: contain;
     touch-action: pan-y;
+    scroll-snap-stop: always;
     scrollbar-width: none;
 }
 
@@ -863,6 +864,7 @@ section[data-slider="kooperativ"] .slider-dots {
     scroll-behavior: auto;
     overscroll-behavior-x: contain;
     touch-action: pan-x;
+    scroll-snap-stop: always;
     scrollbar-width: none;
 }
 
@@ -978,6 +980,7 @@ section[data-slider="kooperativ"] .slider-hint {
     scrollbar-width: none;
     -ms-overflow-style: none;
     scroll-behavior: smooth;
+    scroll-snap-stop: always;
     width: 100%;
 }
 

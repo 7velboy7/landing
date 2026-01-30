@@ -470,7 +470,8 @@ document.addEventListener('DOMContentLoaded', () => {
             currentX: 0,
             isDragging: false,
             intent: null, // 'horizontal' | 'vertical' | null
-            lock: false
+            lock: false,
+            galleryAnimating: false
         };
 
         // --- Helpers ---
@@ -602,6 +603,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const { items } = activeGalleryComp;
 
             items.forEach((item, i) => {
+                // Clear drag overrides
+                item.style.transform = '';
+                item.style.transition = '';
                 // Reset classes
                 item.className = 'gallery-item';
 
@@ -701,24 +705,21 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const navigateGallery = (dir) => {
-            if (!activeGalleryComp) return;
+            if (!activeGalleryComp || tune.galleryAnimating) return;
 
-            const nextIdx = imageIndex + dir;
+            // Strict limit to 1 step
+            const move = dir > 0 ? 1 : -1;
+            const nextIdx = imageIndex + move;
 
-            // Boundary checks for flow-through
-            if (nextIdx < 0) {
-                // First image + swipe back -> Move to Previous Case
-                exitGalleryMode();
-                snapToCase(caseIndex - 1);
-            } else if (nextIdx >= activeGalleryComp.count) {
-                // Last image + swipe forward -> Move to Next Case
-                exitGalleryMode();
-                snapToCase(caseIndex + 1);
+            if (nextIdx < 0 || nextIdx >= activeGalleryComp.count) {
+                return;
             } else {
-                // Normal gallery navigation
+                tune.galleryAnimating = true;
                 imageIndex = nextIdx;
                 updateGalleryVisuals();
                 logState();
+
+                setTimeout(() => { tune.galleryAnimating = false; }, 500);
             }
         };
 
@@ -765,8 +766,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isImageArea = target.closest('.case-image');
 
                 if (MODE === 'CASE' && isImageArea) {
-                    // Stop native block scroll on images to handle gallery trigger
-                    e.preventDefault();
+                    // Let native sub-slider (photos) scroll 1-by-1
+                    // No preventDefault() here -> native scroll wins
                 } else if (MODE === 'GALLERY' && activeGalleryComp) {
                     e.preventDefault();
                     const activeItem = activeGalleryComp.items[imageIndex];
@@ -793,7 +794,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
             const dx = endX - tune.startX;
-            const threshold = 30; // min px to trigger swipe
+            // Increased threshold for more deliberate swipe
+            const threshold = 50;
 
             if (Math.abs(dx) > threshold) {
                 const dir = dx > 0 ? -1 : 1;
@@ -801,22 +803,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isImageArea = target.closest('.case-image');
 
                 if (MODE === 'CASE') {
-                    // Recalculate index to be safe
-                    const w = getSlideWidth();
-                    const currentIdx = Math.round(sliderRoot.scrollLeft / w);
-                    if (currentIdx !== caseIndex) caseIndex = currentIdx;
-
                     if (isImageArea) {
-                        const currentSlide = slides[caseIndex];
-                        const galleryComp = setupGalleryForSlide(currentSlide);
-                        if (galleryComp) {
-                            enterGalleryMode(galleryComp);
-                        } else {
-                            snapToCase(caseIndex + dir);
+                        // Strict 1-by-1 Carousel Scroll
+                        const slider = target.closest('.case-image-slider');
+                        if (slider) {
+                            const w = slider.offsetWidth;
+                            const moveDir = dx > 0 ? -1 : 1;
+                            const currentIdx = Math.round(slider.scrollLeft / w);
+                            // Strictly limit to 1 step
+                            const targetIdx = currentIdx + moveDir;
+                            slider.scrollTo({ left: targetIdx * w, behavior: 'smooth' });
                         }
-                    } else {
-                        snapToCase(caseIndex + dir);
+                        return;
                     }
+                    // Strict 1-by-1 Case Scroll
+                    snapToCase(caseIndex + dir);
                 } else if (MODE === 'GALLERY') {
                     // In gallery mode, we assume full control on horizontal swipes
                     // (The container is likely fullscreen overlays or taking up space)
