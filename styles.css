@@ -539,17 +539,141 @@ img {
         grid-template-columns: 1fr 1.2fr;
     }
 
-.case-card.alt .case-content {
-    order: -1;
-}
+    .case-card.alt .case-content {
+        order: -1;
+    }
 
-/* Swap standard vs alt */
+    /* Swap standard vs alt */
 }
 
 .case-image {
     overflow: hidden;
     border: 2px solid #000;
     position: relative;
+}
+
+/* CASE SLIDER + GALLERY MODE */
+.case-card {
+    margin-bottom: var(--spacing-2xl);
+    display: grid;
+    gap: var(--spacing-lg);
+    align-items: center;
+    border: 2px solid #000;
+    padding: 1rem;
+    background: #fff;
+    box-shadow: var(--shadow-hard);
+    transition: background 0.3s ease;
+    overflow: hidden;
+    /* Ensure text sliding out doesn't break layout */
+}
+
+/* Text Slide Out Animation */
+.case-card .case-content {
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+    will-change: transform, opacity;
+}
+
+.case-card.gallery-mode .case-content {
+    opacity: 0;
+    transform: translateX(-100%);
+    pointer-events: none;
+    position: absolute;
+    /* Take out of flow to let image expand if needed */
+    width: 100%;
+}
+
+.case-card.gallery-mode .case-image {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 100%;
+}
+
+/* Gallery Stack */
+.case-gallery {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    background: #000;
+    /* Dark background for gallery focus */
+    z-index: 10;
+}
+
+.case-gallery.is-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.case-gallery .gallery-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+}
+
+.case-gallery .gallery-item {
+    position: absolute;
+    width: 85%;
+    height: 85%;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease, z-index 0s linear 0.25s;
+    background: #fff;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    will-change: transform, opacity;
+    transform-origin: center center;
+}
+
+.case-gallery .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    /* Let swipes pass through to container */
+}
+
+/* Stack States */
+.case-gallery .gallery-item.is-active {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    z-index: 10;
+    transition-delay: 0s;
+}
+
+.case-gallery .gallery-item.is-prev {
+    opacity: 0.6;
+    transform: translateX(-15%) scale(0.9);
+    z-index: 5;
+}
+
+.case-gallery .gallery-item.is-next {
+    opacity: 0.6;
+    transform: translateX(15%) scale(0.9);
+    z-index: 5;
+}
+
+/* Items further out */
+.case-gallery .gallery-item.is-far-prev {
+    opacity: 0;
+    transform: translateX(-30%) scale(0.8);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.case-gallery .gallery-item.is-far-next {
+    opacity: 0;
+    transform: translateX(30%) scale(0.8);
+    z-index: 1;
+    pointer-events: none;
 }
 
 #kooperativ-slider {
@@ -638,31 +762,33 @@ img {
     scroll-margin-top: 110px;
 }
 
-#kooperativ-slider .kooperativ-image-carousel {
-    cursor: grab;
+/* Case Image Slider (Gallery Scroll) */
+.case-image-slider {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
     touch-action: pan-x;
+    cursor: grab;
 }
 
-#kooperativ-slider .kooperativ-image-carousel::-webkit-scrollbar {
+.case-image-slider::-webkit-scrollbar {
     display: none;
 }
 
-#kooperativ-slider.is-dragging,
-#kooperativ-slider .kooperativ-image-carousel.is-dragging {
+.case-image-slider.is-dragging {
     cursor: grabbing;
+    scroll-snap-type: none;
+    scroll-behavior: auto;
 }
 
-#kooperativ-slider::-webkit-scrollbar {
-    display: none;
-}
-
-#kooperativ-slider.is-dragging {
-    scroll-snap-type: none !important;
-    scroll-behavior: auto !important;
-}
+/* Remove old specific overrides if they are redundant, 
+   but keeping specific ID scopes is fine if needed for specificity. 
+   We just ensure .case-image-slider has the basics. */
 
 section[data-slider="kooperativ"] .slider-dots {
     display: flex;
@@ -1515,6 +1641,7 @@ body.fx-active #lightning-container {
         transform: translateY(-120vh) rotate(14deg);
         opacity: 0;
     }
+
     100% {
         transform: translateY(0) rotate(0deg);
         opacity: 1;
@@ -1897,11 +2024,11 @@ body.fx-active #lightning-container {
         padding: 0 !important;
     }
 
-    #about .grid > div:first-child {
+    #about .grid>div:first-child {
         min-height: 280px !important;
     }
 
-    #about .grid > div:last-child {
+    #about .grid>div:last-child {
         padding: 2rem 1.5rem 3rem 1.5rem !important;
     }
 
@@ -1927,7 +2054,7 @@ body.fx-active #lightning-container {
         align-items: flex-start;
     }
 
-    footer .container > div {
+    footer .container>div {
         width: 100%;
     }
 }

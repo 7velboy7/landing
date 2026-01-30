@@ -1,4 +1,7 @@
 /* Scripts for interactivity */
+// NOTE: To add images for a case, place <img> tags inside that case's
+// .case-image-slider in landing/index.html. If a case has more than 1 image,
+// Gallery Mode will be enabled automatically for that case.
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!document.body.dataset.ctaScrollInit) {
@@ -84,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             item.addEventListener('toggle', () => {
                 if (item.open) {
                     faqPop.currentTime = 0.7;
-                    faqPop.play().catch(() => {});
+                    faqPop.play().catch(() => { });
                 }
             });
         });
@@ -426,166 +429,369 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* 7. Case Sliders */
-    const initCaseSlider = (config) => {
-        const {
-            root,
-            track,
-            slides,
-            dotsContainer,
-            ignoreSelector,
-            useScroll
-        } = config;
+    /* 7. UNIFIED 2-LEVEL SWIPE UX (State Machine) */
+    const initProjectSlider = (sliderRoot) => {
+        if (!sliderRoot || sliderRoot.dataset.swipeInit === '1') return;
+        sliderRoot.dataset.swipeInit = '1';
 
-        if (!root || !track || !slides.length) return;
-        if (root.dataset.dragInit === '1') return;
-        root.dataset.dragInit = '1';
+        // --- Configuration & State ---
+        const track = sliderRoot.querySelector('.kooperativ-track, .future-track');
+        // We use children of track as slides
+        const slides = Array.from(track.children);
+        const dotsContainer = sliderRoot.id === 'kooperativ-slider'
+            ? document.querySelector('#top-slider-dots-slot .top-slider-dots')
+            : document.querySelector('#lower-cases .future-slider-dots');
 
-        let index = 0;
-        let slideWidth = root.getBoundingClientRect().width;
-        let startX = 0;
-        let startY = 0;
-        let currentTranslate = 0;
-        let prevTranslate = 0;
-        let isDragging = false;
-        let dragActive = false;
-        let rafId = null;
-        const threshold = 9;
+        // Internal State
+        let MODE = "CASE"; // "CASE" | "GALLERY"
+        let caseIndex = 0;
+        let imageIndex = 0;
 
-        const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.dot')) : [];
+        let activeGalleryComp = null; // { wrapper, items, track, ... }
 
-        const setTranslate = (value, animate) => {
-            if (useScroll) return;
-            track.style.transition = animate ? 'transform 0.45s ease' : 'none';
-            track.style.transform = `translate3d(${value}px, 0, 0)`;
+        // Touch state
+        let tune = {
+            startX: 0,
+            startY: 0,
+            currentX: 0,
+            isDragging: false,
+            intent: null, // 'horizontal' | 'vertical' | null
+            lock: false
         };
 
-        const updateDots = (activeIndex) => {
-            if (!dots.length) return;
-            dots.forEach((dot, idx) => {
-                const isActive = idx === activeIndex;
-                dot.classList.toggle('is-active', isActive);
-                if (isActive) {
-                    dot.setAttribute('aria-current', 'true');
+        // --- Helpers ---
+        const logState = () => {
+            console.log("MODE:", MODE, "caseIndex:", caseIndex, "imageIndex:", imageIndex);
+        };
+
+        const getSlideWidth = () => sliderRoot.getBoundingClientRect().width;
+
+        const updateDots = (idx) => {
+            if (!dotsContainer) return;
+            const dots = Array.from(dotsContainer.querySelectorAll('.dot'));
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('is-active', i === idx);
+                if (i === idx) dot.setAttribute('aria-current', 'true');
+                else dot.removeAttribute('aria-current');
+            });
+        };
+
+        // --- Case Navigation (Level 1) ---
+        const snapToCase = (idx, animate = true) => {
+            const max = slides.length - 1;
+            caseIndex = Math.max(0, Math.min(idx, max));
+
+            const w = getSlideWidth();
+            const offset = -caseIndex * w;
+
+            // Using scroll-behavior via CSS on the container is possible, 
+            // but for mixed modes, transform is often smoother. 
+            // However, existing CSS uses scroll-snap for fallback. 
+            // We'll control scrollLeft for "CASE" mode to keep it native-friendly.
+
+            if (animate) {
+                sliderRoot.scrollTo({ left: caseIndex * w, behavior: 'smooth' });
+            } else {
+                sliderRoot.scrollTo({ left: caseIndex * w, behavior: 'auto' });
+            }
+
+            updateDots(caseIndex);
+
+            // If we changed case, ensure we reset gallery mode of previous case if needed
+            // (though we usually exit gallery before switching).
+            MODE = "CASE";
+            imageIndex = 0;
+            if (activeGalleryComp) exitGalleryMode();
+
+            logState();
+        };
+
+        // Sync scroll to index (handling resize or native scroll)
+        sliderRoot.addEventListener('scroll', () => {
+            if (MODE === 'GALLERY') return; // Ignore scroll events during gallery manipulation
+            const w = getSlideWidth();
+            const idx = Math.round(sliderRoot.scrollLeft / w);
+            if (idx !== caseIndex) {
+                caseIndex = idx;
+                updateDots(caseIndex);
+                logState();
+            }
+        }, { passive: true });
+
+
+        // --- Gallery Functionality (Level 2) ---
+
+        // Check if a slide has multiple images and setup gallery DOM if needed
+        const setupGalleryForSlide = (slide) => {
+            const imgContainer = slide.querySelector('.case-image');
+            const nativeSlider = slide.querySelector('.case-image-slider');
+
+            if (!imgContainer || !nativeSlider) return null;
+
+            const imgs = Array.from(nativeSlider.querySelectorAll('img'));
+            if (imgs.length < 2) return null; // Logic 2: If 1 image, keep behavior as-is (no gallery)
+
+            // Create Gallery DOM if not exists
+            let galleryWrapper = imgContainer.querySelector('.case-gallery');
+            if (!galleryWrapper) {
+                galleryWrapper = document.createElement('div');
+                galleryWrapper.className = 'case-gallery';
+
+                // Add "Back to case" button
+                const backBtn = document.createElement('button');
+                backBtn.className = 'gallery-back';
+                backBtn.innerText = 'Back to case';
+                backBtn.type = 'button';
+                // Stop propagation on click to avoid triggering other handlers
+                backBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+                backBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    console.log("Back to case clicked");
+                    exitGalleryMode();
+                });
+
+                const trackDiv = document.createElement('div');
+                trackDiv.className = 'gallery-track';
+
+                imgs.forEach((img, i) => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    const clone = img.cloneNode(true);
+                    item.appendChild(clone);
+                    trackDiv.appendChild(item);
+                });
+
+                galleryWrapper.appendChild(backBtn);
+                galleryWrapper.appendChild(trackDiv);
+                imgContainer.appendChild(galleryWrapper);
+            }
+
+            return {
+                wrapper: galleryWrapper,
+                items: Array.from(galleryWrapper.querySelectorAll('.gallery-item')),
+                count: imgs.length,
+                slideElement: slide
+            };
+        };
+
+        const updateGalleryVisuals = () => {
+            if (!activeGalleryComp) return;
+            const { items } = activeGalleryComp;
+
+            items.forEach((item, i) => {
+                // Reset classes
+                item.className = 'gallery-item';
+
+                if (i === imageIndex) {
+                    item.classList.add('is-active');
+                } else if (i === imageIndex - 1) {
+                    item.classList.add('is-prev');
+                } else if (i === imageIndex + 1) {
+                    item.classList.add('is-next');
+                } else if (i < imageIndex) {
+                    item.classList.add('is-far-prev');
                 } else {
-                    dot.removeAttribute('aria-current');
+                    item.classList.add('is-far-next');
                 }
             });
         };
 
-        const clampIndex = (value) => Math.max(0, Math.min(value, slides.length - 1));
+        const handleKeyDown = (e) => {
+            if (MODE !== 'GALLERY') return;
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                navigateGallery(-1);
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                navigateGallery(1);
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                exitGalleryMode();
+            }
+        };
 
-        const snapTo = (nextIndex, animate = true) => {
-            index = clampIndex(nextIndex);
-            slideWidth = root.getBoundingClientRect().width;
-            currentTranslate = -index * slideWidth;
-            prevTranslate = currentTranslate;
-            if (useScroll) {
-                const behavior = animate ? 'smooth' : 'auto';
-                root.scrollTo({ left: index * slideWidth, behavior });
+        const enterGalleryMode = (galleryComp) => {
+            if (MODE === 'GALLERY') return;
+
+            MODE = "GALLERY";
+            activeGalleryComp = galleryComp;
+            imageIndex = 0;
+
+            activeGalleryComp.wrapper.classList.add('is-active');
+            activeGalleryComp.slideElement.classList.add('gallery-mode');
+
+            // Disable native scrolling on root
+            sliderRoot.style.overflowX = 'hidden';
+
+            document.addEventListener('keydown', handleKeyDown);
+
+            updateGalleryVisuals();
+            logState();
+        };
+
+        const exitGalleryMode = () => {
+            if (MODE === 'CASE') return;
+
+            document.removeEventListener('keydown', handleKeyDown);
+
+            MODE = "CASE";
+            if (activeGalleryComp) {
+                activeGalleryComp.wrapper.classList.remove('is-active');
+                activeGalleryComp.slideElement.classList.remove('gallery-mode');
+            }
+            activeGalleryComp = null;
+
+            // Re-enable native scrolling
+            sliderRoot.style.overflowX = 'auto';
+
+            imageIndex = 0;
+            logState();
+        };
+
+        const navigateGallery = (dir) => {
+            if (!activeGalleryComp) return;
+
+            const nextIdx = imageIndex + dir;
+
+            // Boundary checks for flow-through
+            if (nextIdx < 0) {
+                // First image + swipe back -> Move to Previous Case
+                // "If user is on FIRST image and swipes backward... move to PREVIOUS case block"
+                exitGalleryMode();
+                snapToCase(caseIndex - 1);
+            } else if (nextIdx >= activeGalleryComp.count) {
+                // Last image + swipe forward -> Move to Next Case
+                // "Once user reaches LAST image and swipes forward... advance to NEXT case block"
+                exitGalleryMode();
+                snapToCase(caseIndex + 1);
             } else {
-                setTranslate(currentTranslate, animate);
-            }
-            updateDots(index);
-        };
-
-        const onPointerDown = (event) => {
-            if (event.button !== undefined && event.button !== 0) return;
-            if (ignoreSelector && event.target.closest(ignoreSelector)) return;
-            if (event.target.closest('a, button, input, textarea, select, label, .cta-discuss')) return;
-            isDragging = true;
-            dragActive = false;
-            startX = event.clientX;
-            startY = event.clientY;
-            root.setPointerCapture(event.pointerId);
-        };
-
-        const onPointerMove = (event) => {
-            if (!isDragging) return;
-            const dx = event.clientX - startX;
-            const dy = event.clientY - startY;
-
-            if (!dragActive) {
-                if (Math.abs(dx) < threshold || Math.abs(dx) < Math.abs(dy)) return;
-                dragActive = true;
-            }
-            if (dragActive) {
-                event.preventDefault();
-            }
-
-            if (rafId) return;
-            rafId = requestAnimationFrame(() => {
-                rafId = null;
-                currentTranslate = prevTranslate + dx;
-                setTranslate(currentTranslate, false);
-            });
-        };
-
-        const onPointerUp = (event) => {
-            if (!isDragging) return;
-            isDragging = false;
-            dragActive = false;
-            if (event.pointerId !== undefined) {
-                root.releasePointerCapture(event.pointerId);
-            }
-            const movedBy = currentTranslate - prevTranslate;
-            if (Math.abs(movedBy) > threshold) {
-                const direction = movedBy < 0 ? 1 : -1;
-                snapTo(index + direction, true);
-            } else {
-                snapTo(index, true);
+                // Normal gallery navigation
+                imageIndex = nextIdx;
+                updateGalleryVisuals();
+                logState();
             }
         };
 
-        if (!useScroll) {
-            root.addEventListener('pointerdown', onPointerDown);
-            root.addEventListener('pointermove', onPointerMove);
-            root.addEventListener('pointerup', onPointerUp);
-            root.addEventListener('pointercancel', onPointerUp);
-            root.addEventListener('lostpointercapture', onPointerUp);
-        }
 
-        dots.forEach((dot, dotIndex) => {
-            dot.addEventListener('click', () => snapTo(dotIndex, true));
-        });
+        // --- Event Handling ---
 
-        window.addEventListener('resize', () => snapTo(index, false));
-        if (useScroll) {
-            let scrollRaf = null;
-            root.addEventListener('scroll', () => {
-                if (scrollRaf) return;
-                scrollRaf = requestAnimationFrame(() => {
-                    scrollRaf = null;
-                    slideWidth = root.getBoundingClientRect().width;
-                    const nextIndex = clampIndex(Math.round(root.scrollLeft / slideWidth));
-                    if (nextIndex !== index) {
-                        index = nextIndex;
-                        updateDots(index);
+        const handleTouchStart = (e) => {
+            if (e.target.closest('a, button, .cta-discuss') && !e.target.closest('.gallery-back')) {
+                // Let links work, except for our back button which we handle
+                return;
+            }
+
+            tune.startX = e.touches ? e.touches[0].clientX : e.clientX;
+            tune.startY = e.touches ? e.touches[0].clientY : e.clientY;
+            tune.isDragging = true;
+            tune.intent = null;
+            tune.lock = false;
+        };
+
+        const handleTouchMove = (e) => {
+            if (!tune.isDragging) return;
+
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+            const dx = x - tune.startX;
+            const dy = y - tune.startY;
+
+            // Determine intent once
+            if (!tune.intent) {
+                if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        tune.intent = 'horizontal';
+                        tune.lock = true; // Lock scrolling if horizontal
+                    } else {
+                        tune.intent = 'vertical';
+                        tune.isDragging = false; // Release to native vertical scroll
                     }
-                });
-            }, { passive: true });
-        }
-        snapTo(0, false);
+                }
+            }
+
+            if (tune.intent === 'horizontal') {
+                e.preventDefault(); // Prevent native scroll
+            }
+        };
+
+        const handleTouchEnd = (e) => {
+            if (!tune.isDragging || tune.intent !== 'horizontal') {
+                tune.isDragging = false;
+                return;
+            }
+
+            const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+            const dx = endX - tune.startX;
+            const threshold = 50; // min px to trigger swipe
+
+            if (Math.abs(dx) > threshold) {
+                const dir = dx > 0 ? -1 : 1; // -1 = swipes right (prev), 1 = swipes left (next)
+
+                // --- LOGIC GATES ---
+
+                // 1. Where did the swipe start?
+                const target = e.target;
+                const isImageArea = target.closest('.case-image');
+
+                if (MODE === 'CASE') {
+                    if (isImageArea) {
+                        // Check if this slide has gallery capability
+                        const currentSlide = slides[caseIndex];
+                        const galleryComp = setupGalleryForSlide(currentSlide);
+
+                        if (galleryComp) {
+                            // "First swipe on image area -> enter Gallery"
+                            // BUT... Direction matters? 
+                            // Request says: "User starts swiping inside image area... enter Gallery"
+                            enterGalleryMode(galleryComp);
+                        } else {
+                            // Single image, treat as normal case swipe
+                            snapToCase(caseIndex + dir);
+                        }
+                    } else {
+                        // Text area or generic area -> Swipe Case
+                        snapToCase(caseIndex + dir);
+                    }
+                } else if (MODE === 'GALLERY') {
+                    // In gallery mode, we assume full control on horizontal swipes
+                    // (The container is likely fullscreen overlays or taking up space)
+                    // Request says: "Swipes inside image frame control gallery... Swipes outside switch cases"
+                    // But in Gallery Mode, text is hidden, so most screen is image frame.
+
+                    if (isImageArea || activeGalleryComp.wrapper.contains(target)) {
+                        navigateGallery(dir);
+                    } else {
+                        // Should be impossible if text is hidden, but fail-safe:
+                        exitGalleryMode();
+                        snapToCase(caseIndex + dir);
+                    }
+                }
+            }
+
+            tune.isDragging = false;
+        };
+
+        // Attach listeners to the specific slider root
+        // Use passive: false to allow preventDefault
+        sliderRoot.addEventListener('touchstart', handleTouchStart, { passive: true });
+        sliderRoot.addEventListener('touchmove', handleTouchMove, { passive: false });
+        sliderRoot.addEventListener('touchend', handleTouchEnd);
+
+        // Mouse support for desktop testing
+        sliderRoot.addEventListener('mousedown', handleTouchStart);
+        window.addEventListener('mousemove', handleTouchMove);
+        window.addEventListener('mouseup', handleTouchEnd);
+
+        // Initial setup
+        updateDots(caseIndex);
+        logState();
     };
 
-    const kooperativRoot = document.getElementById('kooperativ-slider');
-    initCaseSlider({
-        root: kooperativRoot,
-        track: kooperativRoot ? kooperativRoot.querySelector('.kooperativ-track') : null,
-        slides: kooperativRoot ? Array.from(kooperativRoot.querySelectorAll('.kooperativ-card')) : [],
-        dotsContainer: document.querySelector('#top-slider-dots-slot .top-slider-dots'),
-        ignoreSelector: '.kooperativ-image-carousel',
-        useScroll: true
-    });
+    // Initialize logic
+    document.querySelectorAll('.project-slider').forEach(initProjectSlider);
 
-    const futureRoot = document.getElementById('future-echoes-slider');
-    initCaseSlider({
-        root: futureRoot,
-        track: futureRoot ? futureRoot.querySelector('.future-track') : null,
-        slides: futureRoot ? Array.from(futureRoot.querySelectorAll('.future-slide')) : [],
-        dotsContainer: document.querySelector('#lower-cases .future-slider-dots'),
-        useScroll: true
-    });
+
+
 
     /* 8. Audio Playback Logic (Final Step - Lightning) */
     const finalStep = document.getElementById('final-step');
