@@ -550,6 +550,8 @@ img {
     overflow: hidden;
     border: 2px solid #000;
     position: relative;
+    touch-action: pan-y;
+    /* Ensure lateral swipes are captured by JS */
 }
 
 /* CASE SLIDER + GALLERY MODE */
@@ -573,6 +575,7 @@ img {
     will-change: transform, opacity;
 }
 
+
 .case-card.gallery-mode .case-content {
     opacity: 0;
     transform: translateX(-100%);
@@ -590,17 +593,21 @@ img {
 
 /* Gallery Stack */
 .case-gallery {
-    position: absolute;
-    inset: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    background: #000;
-    /* Dark background for gallery focus */
-    z-index: 10;
+    background: rgba(0, 0, 0, 0.95);
+    /* Dark dimmed background for gallery focus */
+    z-index: 9999;
+    touch-action: none;
 }
 
 .case-gallery.is-active {
@@ -620,12 +627,10 @@ img {
 
 .case-gallery .gallery-item {
     position: absolute;
-    width: 85%;
-    height: 85%;
+    width: 90%;
+    height: 90%;
     transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease, z-index 0s linear 0.25s;
-    background: #fff;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    border: 1px solid #333;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -644,7 +649,7 @@ img {
 /* Stack States */
 .case-gallery .gallery-item.is-active {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1.05);
     z-index: 10;
     transition-delay: 0s;
 }
@@ -676,6 +681,35 @@ img {
     pointer-events: none;
 }
 
+/* Gallery Back Button */
+.gallery-back {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 100;
+    pointer-events: auto;
+    background: #fff;
+    border: 2px solid #000;
+    padding: 0.5rem 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 0 #000;
+    transition: transform 0.2s, box-shadow 0.2s;
+    /* Ensure it's above the image stack */
+}
+
+.gallery-back:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 2px 2px 0 0 #000;
+}
+
+.gallery-back:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+}
+
 #kooperativ-slider {
     overflow-x: auto;
     overflow-y: visible;
@@ -684,7 +718,7 @@ img {
     cursor: ew-resize;
     scroll-behavior: auto;
     overscroll-behavior-x: contain;
-    touch-action: pan-x;
+    touch-action: pan-y;
     scrollbar-width: none;
 }
 
@@ -939,7 +973,7 @@ section[data-slider="kooperativ"] .slider-hint {
 .case-image-slider {
     display: flex;
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: visible;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -960,6 +994,8 @@ section[data-slider="kooperativ"] .slider-hint {
     flex-shrink: 0;
     scroll-snap-align: start;
     scroll-snap-stop: always;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 .case-image img {

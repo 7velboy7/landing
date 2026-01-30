@@ -555,6 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const backBtn = document.createElement('button');
                 backBtn.className = 'gallery-back';
                 backBtn.innerText = 'Back to case';
+                backBtn.setAttribute('data-i18n', 'gallery_back');
                 backBtn.type = 'button';
                 // Stop propagation on click to avoid triggering other handlers
                 backBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
@@ -568,9 +569,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 trackDiv.className = 'gallery-track';
 
                 imgs.forEach((img, i) => {
+                    img.draggable = false;
                     const item = document.createElement('div');
                     item.className = 'gallery-item';
                     const clone = img.cloneNode(true);
+                    clone.draggable = false;
                     item.appendChild(clone);
                     trackDiv.appendChild(item);
                 });
@@ -578,13 +581,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 galleryWrapper.appendChild(backBtn);
                 galleryWrapper.appendChild(trackDiv);
                 imgContainer.appendChild(galleryWrapper);
+
+                // Attach listeners for fluid interaction
+                galleryWrapper.addEventListener('touchstart', (e) => handleTouchStart(e), { passive: false });
+                galleryWrapper.addEventListener('mousedown', (e) => handleTouchStart(e));
+                galleryWrapper.addEventListener('wheel', (e) => handleWheel(e), { passive: false });
             }
 
             return {
                 wrapper: galleryWrapper,
                 items: Array.from(galleryWrapper.querySelectorAll('.gallery-item')),
                 count: imgs.length,
-                slideElement: slide
+                slideElement: slide,
+                originalParent: imgContainer
             };
         };
 
@@ -624,24 +633,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        const enterGalleryMode = (galleryComp) => {
+        const enterGalleryMode = (galleryComp, startIndex = 0) => {
             if (MODE === 'GALLERY') return;
 
             MODE = "GALLERY";
             activeGalleryComp = galleryComp;
-            imageIndex = 0;
+            imageIndex = startIndex;
+
+            // Move to body to break out of any overflow:hidden
+            document.body.appendChild(activeGalleryComp.wrapper);
+            document.body.style.overflow = 'hidden';
 
             activeGalleryComp.wrapper.classList.add('is-active');
             activeGalleryComp.slideElement.classList.add('gallery-mode');
-
-            // Disable native scrolling on root
-            sliderRoot.style.overflowX = 'hidden';
 
             document.addEventListener('keydown', handleKeyDown);
 
             updateGalleryVisuals();
             logState();
         };
+
+        // Click-to-Expand Logic
+        slides.forEach(slide => {
+            const nativeSlider = slide.querySelector('.case-image-slider');
+            if (nativeSlider) {
+                const carouselImages = Array.from(nativeSlider.querySelectorAll('img'));
+                carouselImages.forEach((img, idx) => {
+                    img.style.cursor = 'zoom-in';
+                    img.addEventListener('click', (e) => {
+                        // Prevent click if we were dragging (small movement threshold)
+                        // Note: tune.startX is updated on handleTouchStart
+                        // On desktop/mouse, we might need to check movement
+                        const galleryComp = setupGalleryForSlide(slide);
+                        if (galleryComp) enterGalleryMode(galleryComp, idx);
+                    });
+                });
+            }
+        });
 
         const exitGalleryMode = () => {
             if (MODE === 'CASE') return;
@@ -652,11 +680,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (activeGalleryComp) {
                 activeGalleryComp.wrapper.classList.remove('is-active');
                 activeGalleryComp.slideElement.classList.remove('gallery-mode');
+
+                // Move back to original parent after transition
+                const wrapper = activeGalleryComp.wrapper;
+                const parent = activeGalleryComp.originalParent;
+                setTimeout(() => {
+                    if (parent && wrapper.parentElement === document.body) {
+                        parent.appendChild(wrapper);
+                    }
+                }, 300);
             }
+            document.body.style.overflow = '';
             activeGalleryComp = null;
 
             // Re-enable native scrolling
-            sliderRoot.style.overflowX = 'auto';
+            // sliderRoot.style.overflowX = 'auto';
 
             imageIndex = 0;
             logState();
@@ -670,12 +708,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Boundary checks for flow-through
             if (nextIdx < 0) {
                 // First image + swipe back -> Move to Previous Case
-                // "If user is on FIRST image and swipes backward... move to PREVIOUS case block"
                 exitGalleryMode();
                 snapToCase(caseIndex - 1);
             } else if (nextIdx >= activeGalleryComp.count) {
                 // Last image + swipe forward -> Move to Next Case
-                // "Once user reaches LAST image and swipes forward... advance to NEXT case block"
                 exitGalleryMode();
                 snapToCase(caseIndex + 1);
             } else {
@@ -689,20 +725,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- Event Handling ---
 
-        const handleTouchStart = (e) => {
+        function handleTouchStart(e) {
             if (e.target.closest('a, button, .cta-discuss') && !e.target.closest('.gallery-back')) {
                 // Let links work, except for our back button which we handle
                 return;
             }
 
+            // Do NOT preventDefault here, it kills the scroll gesture start
             tune.startX = e.touches ? e.touches[0].clientX : e.clientX;
             tune.startY = e.touches ? e.touches[0].clientY : e.clientY;
             tune.isDragging = true;
             tune.intent = null;
             tune.lock = false;
-        };
+        }
 
-        const handleTouchMove = (e) => {
+        function handleTouchMove(e) {
             if (!tune.isDragging) return;
 
             const x = e.touches ? e.touches[0].clientX : e.clientX;
@@ -710,60 +747,74 @@ document.addEventListener('DOMContentLoaded', () => {
             const dx = x - tune.startX;
             const dy = y - tune.startY;
 
-            // Determine intent once
             if (!tune.intent) {
-                if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+                if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
                     if (Math.abs(dx) > Math.abs(dy)) {
                         tune.intent = 'horizontal';
-                        tune.lock = true; // Lock scrolling if horizontal
+                        tune.lock = true;
                     } else {
                         tune.intent = 'vertical';
-                        tune.isDragging = false; // Release to native vertical scroll
+                        tune.isDragging = false;
+                        return;
                     }
                 }
             }
 
             if (tune.intent === 'horizontal') {
-                e.preventDefault(); // Prevent native scroll
-            }
-        };
+                const target = e.target;
+                const isImageArea = target.closest('.case-image');
 
-        const handleTouchEnd = (e) => {
+                if (MODE === 'CASE' && isImageArea) {
+                    // Stop native block scroll on images to handle gallery trigger
+                    e.preventDefault();
+                } else if (MODE === 'GALLERY' && activeGalleryComp) {
+                    e.preventDefault();
+                    const activeItem = activeGalleryComp.items[imageIndex];
+                    if (activeItem) {
+                        activeItem.style.transition = 'none';
+                        activeItem.style.transform = `translateX(${dx}px) scale(1.05)`;
+                    }
+                }
+            }
+        }
+
+        function handleTouchEnd(e) {
             if (!tune.isDragging || tune.intent !== 'horizontal') {
                 tune.isDragging = false;
                 return;
             }
 
+            if (MODE === 'GALLERY' && activeGalleryComp) {
+                const activeItem = activeGalleryComp.items[imageIndex];
+                if (activeItem) {
+                    activeItem.style.transition = '';
+                }
+            }
+
             const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
             const dx = endX - tune.startX;
-            const threshold = 50; // min px to trigger swipe
+            const threshold = 30; // min px to trigger swipe
 
             if (Math.abs(dx) > threshold) {
-                const dir = dx > 0 ? -1 : 1; // -1 = swipes right (prev), 1 = swipes left (next)
-
-                // --- LOGIC GATES ---
-
-                // 1. Where did the swipe start?
+                const dir = dx > 0 ? -1 : 1;
                 const target = e.target;
                 const isImageArea = target.closest('.case-image');
 
                 if (MODE === 'CASE') {
+                    // Recalculate index to be safe
+                    const w = getSlideWidth();
+                    const currentIdx = Math.round(sliderRoot.scrollLeft / w);
+                    if (currentIdx !== caseIndex) caseIndex = currentIdx;
+
                     if (isImageArea) {
-                        // Check if this slide has gallery capability
                         const currentSlide = slides[caseIndex];
                         const galleryComp = setupGalleryForSlide(currentSlide);
-
                         if (galleryComp) {
-                            // "First swipe on image area -> enter Gallery"
-                            // BUT... Direction matters? 
-                            // Request says: "User starts swiping inside image area... enter Gallery"
                             enterGalleryMode(galleryComp);
                         } else {
-                            // Single image, treat as normal case swipe
                             snapToCase(caseIndex + dir);
                         }
                     } else {
-                        // Text area or generic area -> Swipe Case
                         snapToCase(caseIndex + dir);
                     }
                 } else if (MODE === 'GALLERY') {
@@ -780,21 +831,43 @@ document.addEventListener('DOMContentLoaded', () => {
                         snapToCase(caseIndex + dir);
                     }
                 }
+            } else {
+                // Return to original state if threshold not met
+                if (MODE === 'CASE') {
+                    snapToCase(caseIndex);
+                } else if (MODE === 'GALLERY') {
+                    updateGalleryVisuals();
+                }
             }
 
             tune.isDragging = false;
-        };
+        }
 
         // Attach listeners to the specific slider root
-        // Use passive: false to allow preventDefault
-        sliderRoot.addEventListener('touchstart', handleTouchStart, { passive: true });
+        sliderRoot.addEventListener('touchstart', handleTouchStart, { passive: false });
         sliderRoot.addEventListener('touchmove', handleTouchMove, { passive: false });
         sliderRoot.addEventListener('touchend', handleTouchEnd);
-
-        // Mouse support for desktop testing
         sliderRoot.addEventListener('mousedown', handleTouchStart);
+
+        // Global window listeners for the move/end phases to ensure continuity
         window.addEventListener('mousemove', handleTouchMove);
         window.addEventListener('mouseup', handleTouchEnd);
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd);
+
+        // --- Gallery Wheel Support ---
+        function handleWheel(e) {
+            if (MODE !== 'GALLERY') return;
+            e.preventDefault();
+            // Debounce wheel to prevent rapid skipping
+            if (tune.wheelTarget) return;
+
+            const dir = e.deltaX > 0 || e.deltaY > 0 ? 1 : -1;
+            navigateGallery(dir);
+
+            tune.wheelTarget = true;
+            setTimeout(() => { tune.wheelTarget = false; }, 400);
+        }
 
         // Initial setup
         updateDots(caseIndex);
