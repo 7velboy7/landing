@@ -111,6 +111,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
+                // Handle horizontal slider if target is a slide
+                const slider = targetElement.closest('.project-slider');
+                if (slider) {
+                    const slideWidth = slider.getBoundingClientRect().width;
+                    const slides = Array.from(slider.querySelectorAll('.project-slide'));
+                    const slideIndex = slides.indexOf(targetElement);
+                    if (slideIndex !== -1) {
+                        slider.scrollTo({
+                            left: slideIndex * slideWidth,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+
                 // Offset for fixed header
                 const headerHeight = 80;
                 const elementPosition = targetElement.getBoundingClientRect().top;
