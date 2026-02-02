@@ -739,32 +739,31 @@ img {
     min-height: 620px;
 }
 
-#kooperativ-slider .project--kooperativ .project-copy {
+.project-copy {
     display: flex;
     flex-direction: column;
     height: 100%;
     position: relative;
     z-index: 2;
-}
-
-#kooperativ-slider .project--kooperativ .project-left-top {
-    flex: 0 0 auto;
-}
-
-#kooperativ-slider .project--kooperativ .project-left-mid {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
     justify-content: center;
 }
 
-#kooperativ-slider .project--kooperativ .project-left-bottom {
+.project-left-top {
     flex: 0 0 auto;
-    margin-top: auto;
+    margin-bottom: 1.5rem;
 }
 
-#kooperativ-slider .project-copy,
-#kooperativ-slider .project-media {
+.project-left-mid {
+    flex: 0 0 auto;
+}
+
+.project-left-bottom {
+    flex: 0 0 auto;
+    margin-top: 1.5rem;
+}
+
+.project-copy,
+.project-media {
     display: flex;
     flex-direction: column;
 }
