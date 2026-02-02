@@ -158,7 +158,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchJson = async (path) => {
         try {
-            const response = await fetch(path, { cache: 'no-store' });
+            // Add a timestamp to bypass cache
+            const url = new URL(path, window.location.origin);
+            url.searchParams.set('t', Date.now().toString());
+
+            const response = await fetch(url.href, { cache: 'no-store' });
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
@@ -182,7 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadJsonViaXhr = (path) => new Promise((resolve) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('GET', path, true);
+        // Add timestamp to XHR too
+        const cacheBuster = (path.indexOf('?') > -1 ? '&' : '?') + 't=' + Date.now();
+        xhr.open('GET', path + cacheBuster, true);
         xhr.overrideMimeType('application/json');
         xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
@@ -214,7 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (inlineData) {
                 if (translations[lang]) {
                     Object.entries(inlineData).forEach(([key, value]) => {
-                        if (!(key in translations[lang])) {
+                        // Crucial: allow inline values to override IF they are non-empty
+                        // This helps during development/urgent updates
+                        if (value && value !== "") {
+                            translations[lang][key] = value;
+                        } else if (!(key in translations[lang])) {
                             translations[lang][key] = value;
                         }
                     });
