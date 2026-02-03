@@ -477,6 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let tune = {
             startX: 0,
             startY: 0,
+            startTarget: null,
             currentX: 0,
             isDragging: false,
             intent: null, // 'horizontal' | 'vertical' | null
@@ -597,6 +598,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 galleryWrapper.addEventListener('touchstart', (e) => handleTouchStart(e), { passive: false });
                 galleryWrapper.addEventListener('mousedown', (e) => handleTouchStart(e));
                 galleryWrapper.addEventListener('wheel', (e) => handleWheel(e), { passive: false });
+                galleryWrapper.addEventListener('click', (e) => {
+                    if (MODE !== 'GALLERY') return;
+                    if (e.target.closest('.gallery-item img') || e.target.closest('.gallery-back')) return;
+                    exitGalleryMode();
+                });
             }
 
             return {
@@ -745,6 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Do NOT preventDefault here, it kills the scroll gesture start
             tune.startX = e.touches ? e.touches[0].clientX : e.clientX;
             tune.startY = e.touches ? e.touches[0].clientY : e.clientY;
+            tune.startTarget = e.target;
             tune.isDragging = true;
             tune.intent = null;
             tune.lock = false;
@@ -790,8 +797,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function handleTouchEnd(e) {
-            if (!tune.isDragging || tune.intent !== 'horizontal') {
+            if (!tune.isDragging) {
                 tune.isDragging = false;
+                tune.startTarget = null;
+                return;
+            }
+
+            if (MODE === 'GALLERY' && !tune.intent) {
+                const tapTarget = tune.startTarget || e.target;
+                if (tapTarget && !tapTarget.closest('.gallery-item img') && !tapTarget.closest('.gallery-back')) {
+                    exitGalleryMode();
+                } else if (activeGalleryComp) {
+                    updateGalleryVisuals();
+                }
+                tune.isDragging = false;
+                tune.startTarget = null;
+                return;
+            }
+
+            if (tune.intent !== 'horizontal') {
+                tune.isDragging = false;
+                tune.startTarget = null;
                 return;
             }
 
@@ -852,6 +878,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             tune.isDragging = false;
+            tune.startTarget = null;
         }
 
         // Attach listeners to the specific slider root
