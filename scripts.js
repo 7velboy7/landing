@@ -98,7 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
+            if (targetId === '#') {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+            }
 
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
@@ -502,6 +505,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         };
 
+        const attachDotClickHandlers = () => {
+            if (!dotsContainer || dotsContainer.dataset.dotsInit === '1') return;
+            dotsContainer.dataset.dotsInit = '1';
+            dotsContainer.addEventListener('click', (e) => {
+                const dot = e.target.closest('.dot');
+                if (!dot) return;
+                const dots = Array.from(dotsContainer.querySelectorAll('.dot'));
+                const idx = dots.indexOf(dot);
+                if (idx === -1) return;
+                snapToCase(idx);
+            });
+        };
+
         // --- Case Navigation (Level 1) ---
         const snapToCase = (idx, animate = true) => {
             const max = slides.length - 1;
@@ -531,6 +547,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             logState();
         };
+
+        attachDotClickHandlers();
 
         // Sync scroll to index (handling resize or native scroll)
         sliderRoot.addEventListener('scroll', () => {
