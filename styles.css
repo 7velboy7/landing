@@ -711,7 +711,7 @@ img {
 
 #kooperativ-slider {
     overflow-x: auto;
-    overflow-y: visible;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     cursor: ew-resize;
@@ -855,7 +855,7 @@ section[data-slider="kooperativ"] .slider-dots {
 
 .future-slider {
     overflow-x: auto;
-    overflow-y: visible;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     cursor: ew-resize;
@@ -973,7 +973,7 @@ section[data-slider="kooperativ"] .slider-hint {
 .case-image-slider {
     display: flex;
     overflow-x: auto;
-    overflow-y: visible;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
