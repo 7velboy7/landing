@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const url = '/portfolio.pdf';
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'Alex_Velboy_Portfolio.pdf';
+            link.download = 'Portfolio_v2.pdf';
             link.rel = 'noopener';
             link.style.display = 'none';
             document.body.appendChild(link);
