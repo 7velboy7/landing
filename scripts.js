@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (downloadButton) {
         downloadButton.addEventListener('click', (event) => {
             event.preventDefault();
-            const url = '/Portfolio_v2.pdf';
+            const url = 'https://media.githubusercontent.com/media/7velboy7/landing/main/Portfolio_v2.pdf';
             const link = document.createElement('a');
             link.href = url;
             link.download = 'Portfolio_v2.pdf';
