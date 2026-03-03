@@ -98,10 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
             const targetId = this.getAttribute('href');
-            if (targetId === '#') {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                return;
-            }
+            if (targetId === '#') return;
 
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
@@ -111,20 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const select = document.getElementById('project_type_select');
                     if (select) {
                         select.value = projectType;
-                    }
-                }
-
-                // Handle horizontal slider if target is a slide
-                const slider = targetElement.closest('.project-slider');
-                if (slider) {
-                    const slideWidth = slider.getBoundingClientRect().width;
-                    const slides = Array.from(slider.querySelectorAll('.project-slide'));
-                    const slideIndex = slides.indexOf(targetElement);
-                    if (slideIndex !== -1) {
-                        slider.scrollTo({
-                            left: slideIndex * slideWidth,
-                            behavior: 'smooth'
-                        });
                     }
                 }
 
@@ -161,11 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchJson = async (path) => {
         try {
-            // Add a timestamp to bypass cache
-            const url = new URL(path, window.location.origin);
-            url.searchParams.set('t', Date.now().toString());
-
-            const response = await fetch(url.href, { cache: 'no-store' });
+            const response = await fetch(path, { cache: 'no-store' });
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
@@ -189,9 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadJsonViaXhr = (path) => new Promise((resolve) => {
         const xhr = new XMLHttpRequest();
-        // Add timestamp to XHR too
-        const cacheBuster = (path.indexOf('?') > -1 ? '&' : '?') + 't=' + Date.now();
-        xhr.open('GET', path + cacheBuster, true);
+        xhr.open('GET', path, true);
         xhr.overrideMimeType('application/json');
         xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
@@ -223,11 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (inlineData) {
                 if (translations[lang]) {
                     Object.entries(inlineData).forEach(([key, value]) => {
-                        // Crucial: allow inline values to override IF they are non-empty
-                        // This helps during development/urgent updates
-                        if (value && value !== "") {
-                            translations[lang][key] = value;
-                        } else if (!(key in translations[lang])) {
+                        if (!(key in translations[lang])) {
                             translations[lang][key] = value;
                         }
                     });
@@ -480,12 +453,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let tune = {
             startX: 0,
             startY: 0,
-            startTarget: null,
             currentX: 0,
             isDragging: false,
             intent: null, // 'horizontal' | 'vertical' | null
-            lock: false,
-            galleryAnimating: false
+            lock: false
         };
 
         // --- Helpers ---
@@ -502,19 +473,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 dot.classList.toggle('is-active', i === idx);
                 if (i === idx) dot.setAttribute('aria-current', 'true');
                 else dot.removeAttribute('aria-current');
-            });
-        };
-
-        const attachDotClickHandlers = () => {
-            if (!dotsContainer || dotsContainer.dataset.dotsInit === '1') return;
-            dotsContainer.dataset.dotsInit = '1';
-            dotsContainer.addEventListener('click', (e) => {
-                const dot = e.target.closest('.dot');
-                if (!dot) return;
-                const dots = Array.from(dotsContainer.querySelectorAll('.dot'));
-                const idx = dots.indexOf(dot);
-                if (idx === -1) return;
-                snapToCase(idx);
             });
         };
 
@@ -547,8 +505,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             logState();
         };
-
-        attachDotClickHandlers();
 
         // Sync scroll to index (handling resize or native scroll)
         sliderRoot.addEventListener('scroll', () => {
@@ -585,7 +541,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const backBtn = document.createElement('button');
                 backBtn.className = 'gallery-back';
                 backBtn.innerText = 'Back to case';
-                backBtn.setAttribute('data-i18n', 'gallery_back');
                 backBtn.type = 'button';
                 // Stop propagation on click to avoid triggering other handlers
                 backBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
@@ -599,11 +554,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 trackDiv.className = 'gallery-track';
 
                 imgs.forEach((img, i) => {
-                    img.draggable = false;
                     const item = document.createElement('div');
                     item.className = 'gallery-item';
                     const clone = img.cloneNode(true);
-                    clone.draggable = false;
                     item.appendChild(clone);
                     trackDiv.appendChild(item);
                 });
@@ -611,24 +564,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 galleryWrapper.appendChild(backBtn);
                 galleryWrapper.appendChild(trackDiv);
                 imgContainer.appendChild(galleryWrapper);
-
-                // Attach listeners for fluid interaction
-                galleryWrapper.addEventListener('touchstart', (e) => handleTouchStart(e), { passive: false });
-                galleryWrapper.addEventListener('mousedown', (e) => handleTouchStart(e));
-                galleryWrapper.addEventListener('wheel', (e) => handleWheel(e), { passive: false });
-                galleryWrapper.addEventListener('click', (e) => {
-                    if (MODE !== 'GALLERY') return;
-                    if (e.target.closest('.gallery-item img') || e.target.closest('.gallery-back')) return;
-                    exitGalleryMode();
-                });
             }
 
             return {
                 wrapper: galleryWrapper,
                 items: Array.from(galleryWrapper.querySelectorAll('.gallery-item')),
                 count: imgs.length,
-                slideElement: slide,
-                originalParent: imgContainer
+                slideElement: slide
             };
         };
 
@@ -637,9 +579,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const { items } = activeGalleryComp;
 
             items.forEach((item, i) => {
-                // Clear drag overrides
-                item.style.transform = '';
-                item.style.transition = '';
                 // Reset classes
                 item.className = 'gallery-item';
 
@@ -671,43 +610,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        const enterGalleryMode = (galleryComp, startIndex = 0) => {
+        const enterGalleryMode = (galleryComp) => {
             if (MODE === 'GALLERY') return;
 
             MODE = "GALLERY";
             activeGalleryComp = galleryComp;
-            imageIndex = startIndex;
-
-            // Move to body to break out of any overflow:hidden
-            document.body.appendChild(activeGalleryComp.wrapper);
-            document.body.style.overflow = 'hidden';
+            imageIndex = 0;
 
             activeGalleryComp.wrapper.classList.add('is-active');
             activeGalleryComp.slideElement.classList.add('gallery-mode');
+
+            // Disable native scrolling on root
+            sliderRoot.style.overflowX = 'hidden';
 
             document.addEventListener('keydown', handleKeyDown);
 
             updateGalleryVisuals();
             logState();
         };
-
-        // Click-to-Expand Logic
-        slides.forEach(slide => {
-            const nativeSlider = slide.querySelector('.case-image-slider');
-            if (nativeSlider) {
-                const carouselImages = Array.from(nativeSlider.querySelectorAll('img'));
-                carouselImages.forEach((img, idx) => {
-                    img.style.cursor = 'zoom-in';
-                    img.addEventListener('click', (e) => {
-                        // Prevent click if we were dragging (small movement threshold)
-                        // Note: tune.startX is updated on handleTouchStart
-                        // On desktop/mouse, we might need to check movement
-                        const galleryComp = setupGalleryForSlide(slide);
-                        if (galleryComp) enterGalleryMode(galleryComp, idx);
-                    });
-                });
-            }
-        });
 
         const exitGalleryMode = () => {
             if (MODE === 'CASE') return;
@@ -718,64 +638,57 @@ document.addEventListener('DOMContentLoaded', () => {
             if (activeGalleryComp) {
                 activeGalleryComp.wrapper.classList.remove('is-active');
                 activeGalleryComp.slideElement.classList.remove('gallery-mode');
-
-                // Move back to original parent after transition
-                const wrapper = activeGalleryComp.wrapper;
-                const parent = activeGalleryComp.originalParent;
-                setTimeout(() => {
-                    if (parent && wrapper.parentElement === document.body) {
-                        parent.appendChild(wrapper);
-                    }
-                }, 300);
             }
-            document.body.style.overflow = '';
             activeGalleryComp = null;
 
             // Re-enable native scrolling
-            // sliderRoot.style.overflowX = 'auto';
+            sliderRoot.style.overflowX = 'auto';
 
             imageIndex = 0;
             logState();
         };
 
         const navigateGallery = (dir) => {
-            if (!activeGalleryComp || tune.galleryAnimating) return;
+            if (!activeGalleryComp) return;
 
-            // Strict limit to 1 step
-            const move = dir > 0 ? 1 : -1;
-            const nextIdx = imageIndex + move;
+            const nextIdx = imageIndex + dir;
 
-            if (nextIdx < 0 || nextIdx >= activeGalleryComp.count) {
-                return;
+            // Boundary checks for flow-through
+            if (nextIdx < 0) {
+                // First image + swipe back -> Move to Previous Case
+                // "If user is on FIRST image and swipes backward... move to PREVIOUS case block"
+                exitGalleryMode();
+                snapToCase(caseIndex - 1);
+            } else if (nextIdx >= activeGalleryComp.count) {
+                // Last image + swipe forward -> Move to Next Case
+                // "Once user reaches LAST image and swipes forward... advance to NEXT case block"
+                exitGalleryMode();
+                snapToCase(caseIndex + 1);
             } else {
-                tune.galleryAnimating = true;
+                // Normal gallery navigation
                 imageIndex = nextIdx;
                 updateGalleryVisuals();
                 logState();
-
-                setTimeout(() => { tune.galleryAnimating = false; }, 500);
             }
         };
 
 
         // --- Event Handling ---
 
-        function handleTouchStart(e) {
+        const handleTouchStart = (e) => {
             if (e.target.closest('a, button, .cta-discuss') && !e.target.closest('.gallery-back')) {
                 // Let links work, except for our back button which we handle
                 return;
             }
 
-            // Do NOT preventDefault here, it kills the scroll gesture start
             tune.startX = e.touches ? e.touches[0].clientX : e.clientX;
             tune.startY = e.touches ? e.touches[0].clientY : e.clientY;
-            tune.startTarget = e.target;
             tune.isDragging = true;
             tune.intent = null;
             tune.lock = false;
-        }
+        };
 
-        function handleTouchMove(e) {
+        const handleTouchMove = (e) => {
             if (!tune.isDragging) return;
 
             const x = e.touches ? e.touches[0].clientX : e.clientX;
@@ -783,95 +696,62 @@ document.addEventListener('DOMContentLoaded', () => {
             const dx = x - tune.startX;
             const dy = y - tune.startY;
 
+            // Determine intent once
             if (!tune.intent) {
-                if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+                if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
                     if (Math.abs(dx) > Math.abs(dy)) {
                         tune.intent = 'horizontal';
-                        tune.lock = true;
+                        tune.lock = true; // Lock scrolling if horizontal
                     } else {
                         tune.intent = 'vertical';
-                        tune.isDragging = false;
-                        return;
+                        tune.isDragging = false; // Release to native vertical scroll
                     }
                 }
             }
 
             if (tune.intent === 'horizontal') {
-                const target = e.target;
-                const isImageArea = target.closest('.case-image');
-
-                if (MODE === 'CASE' && isImageArea) {
-                    // Let native sub-slider (photos) scroll 1-by-1
-                    // No preventDefault() here -> native scroll wins
-                } else if (MODE === 'GALLERY' && activeGalleryComp) {
-                    e.preventDefault();
-                    const activeItem = activeGalleryComp.items[imageIndex];
-                    if (activeItem) {
-                        activeItem.style.transition = 'none';
-                        activeItem.style.transform = `translateX(${dx}px) scale(1.05)`;
-                    }
-                }
+                e.preventDefault(); // Prevent native scroll
             }
-        }
+        };
 
-        function handleTouchEnd(e) {
-            if (!tune.isDragging) {
+        const handleTouchEnd = (e) => {
+            if (!tune.isDragging || tune.intent !== 'horizontal') {
                 tune.isDragging = false;
-                tune.startTarget = null;
                 return;
-            }
-
-            if (MODE === 'GALLERY' && !tune.intent) {
-                const tapTarget = tune.startTarget || e.target;
-                if (tapTarget && !tapTarget.closest('.gallery-item img') && !tapTarget.closest('.gallery-back')) {
-                    exitGalleryMode();
-                } else if (activeGalleryComp) {
-                    updateGalleryVisuals();
-                }
-                tune.isDragging = false;
-                tune.startTarget = null;
-                return;
-            }
-
-            if (tune.intent !== 'horizontal') {
-                tune.isDragging = false;
-                tune.startTarget = null;
-                return;
-            }
-
-            if (MODE === 'GALLERY' && activeGalleryComp) {
-                const activeItem = activeGalleryComp.items[imageIndex];
-                if (activeItem) {
-                    activeItem.style.transition = '';
-                }
             }
 
             const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
             const dx = endX - tune.startX;
-            // Increased threshold for more deliberate swipe
-            const threshold = 50;
+            const threshold = 50; // min px to trigger swipe
 
             if (Math.abs(dx) > threshold) {
-                const dir = dx > 0 ? -1 : 1;
+                const dir = dx > 0 ? -1 : 1; // -1 = swipes right (prev), 1 = swipes left (next)
+
+                // --- LOGIC GATES ---
+
+                // 1. Where did the swipe start?
                 const target = e.target;
                 const isImageArea = target.closest('.case-image');
 
                 if (MODE === 'CASE') {
                     if (isImageArea) {
-                        // Strict 1-by-1 Carousel Scroll
-                        const slider = target.closest('.case-image-slider');
-                        if (slider) {
-                            const w = slider.offsetWidth;
-                            const moveDir = dx > 0 ? -1 : 1;
-                            const currentIdx = Math.round(slider.scrollLeft / w);
-                            // Strictly limit to 1 step
-                            const targetIdx = currentIdx + moveDir;
-                            slider.scrollTo({ left: targetIdx * w, behavior: 'smooth' });
+                        // Check if this slide has gallery capability
+                        const currentSlide = slides[caseIndex];
+                        const galleryComp = setupGalleryForSlide(currentSlide);
+
+                        if (galleryComp) {
+                            // "First swipe on image area -> enter Gallery"
+                            // BUT... Direction matters? 
+                            // Request says: "User starts swiping inside image area... enter Gallery"
+                            enterGalleryMode(galleryComp);
+                        } else {
+                            // Single image, treat as normal case swipe
+                            snapToCase(caseIndex + dir);
                         }
-                        return;
+                    } else {
+                        // Text area or generic area -> Swipe Case
+                        snapToCase(caseIndex + dir);
                     }
-                    // Strict 1-by-1 Case Scroll
-                    snapToCase(caseIndex + dir);
                 } else if (MODE === 'GALLERY') {
                     // In gallery mode, we assume full control on horizontal swipes
                     // (The container is likely fullscreen overlays or taking up space)
@@ -886,44 +766,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         snapToCase(caseIndex + dir);
                     }
                 }
-            } else {
-                // Return to original state if threshold not met
-                if (MODE === 'CASE') {
-                    snapToCase(caseIndex);
-                } else if (MODE === 'GALLERY') {
-                    updateGalleryVisuals();
-                }
             }
 
             tune.isDragging = false;
-            tune.startTarget = null;
-        }
+        };
 
         // Attach listeners to the specific slider root
-        sliderRoot.addEventListener('touchstart', handleTouchStart, { passive: false });
+        // Use passive: false to allow preventDefault
+        sliderRoot.addEventListener('touchstart', handleTouchStart, { passive: true });
         sliderRoot.addEventListener('touchmove', handleTouchMove, { passive: false });
         sliderRoot.addEventListener('touchend', handleTouchEnd);
-        sliderRoot.addEventListener('mousedown', handleTouchStart);
 
-        // Global window listeners for the move/end phases to ensure continuity
+        // Mouse support for desktop testing
+        sliderRoot.addEventListener('mousedown', handleTouchStart);
         window.addEventListener('mousemove', handleTouchMove);
         window.addEventListener('mouseup', handleTouchEnd);
-        window.addEventListener('touchmove', handleTouchMove, { passive: false });
-        window.addEventListener('touchend', handleTouchEnd);
-
-        // --- Gallery Wheel Support ---
-        function handleWheel(e) {
-            if (MODE !== 'GALLERY') return;
-            e.preventDefault();
-            // Debounce wheel to prevent rapid skipping
-            if (tune.wheelTarget) return;
-
-            const dir = e.deltaX > 0 || e.deltaY > 0 ? 1 : -1;
-            navigateGallery(dir);
-
-            tune.wheelTarget = true;
-            setTimeout(() => { tune.wheelTarget = false; }, 400);
-        }
 
         // Initial setup
         updateDots(caseIndex);
@@ -1508,4 +1365,207 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return current.default;
     }
+    (() => {
+  // =========================
+  // SELECTORS — EDIT THESE
+  // =========================
+  const SELECTORS = {
+    caseBlock: ".project",          // один кейс/блок
+    textPanel: ".project-text",     // левый блок с текстом
+    mediaFrame: ".project-media",   // рамка/контейнер для картинок
+    img: "img"                      // картинки внутри mediaFrame
+  };
+
+  // Enable only on mobile (you can tweak breakpoint)
+  const isMobile = () => window.matchMedia("(max-width: 900px)").matches;
+
+  let MODE = "CASE"; // "CASE" | "GALLERY"
+  let caseIndex = 0;
+  let imageIndex = 0;
+
+  const cases = () => Array.from(document.querySelectorAll(SELECTORS.caseBlock));
+
+  function logState(reason="") {
+    console.log("MODE:", MODE, "caseIndex:", caseIndex, "imageIndex:", imageIndex, reason);
+  }
+
+  function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+
+  function getParts(caseEl) {
+    const text = caseEl.querySelector(SELECTORS.textPanel);
+    const frame = caseEl.querySelector(SELECTORS.mediaFrame);
+    const imgs = frame ? Array.from(frame.querySelectorAll(SELECTORS.img)) : [];
+    return { text, frame, imgs };
+  }
+
+  function ensureGalleryDOM(caseEl) {
+    const { frame, imgs } = getParts(caseEl);
+    if (!frame || imgs.length <= 1) return;
+
+    // wrap images into gallery-track if not done
+    if (!frame.querySelector(".gallery-track")) {
+      const track = document.createElement("div");
+      track.className = "gallery-track";
+      imgs.forEach(img => track.appendChild(img));
+      frame.appendChild(track);
+      frame.classList.add("has-gallery");
+    }
+  }
+
+  function enterGallery(caseEl) {
+    const { text, frame, imgs } = getParts(caseEl);
+    if (!frame || imgs.length <= 1) return;
+
+    MODE = "GALLERY";
+    imageIndex = 0;
+
+    // hide text panel (slide away)
+    if (text) text.classList.add("gallery-hide-text");
+    frame.classList.add("gallery-mode");
+
+    updateGallery(caseEl);
+    logState("enterGallery");
+  }
+
+  function exitGallery(caseEl) {
+    const { text, frame } = getParts(caseEl);
+    MODE = "CASE";
+    imageIndex = 0;
+
+    if (text) text.classList.remove("gallery-hide-text");
+    if (frame) frame.classList.remove("gallery-mode");
+
+    logState("exitGallery");
+  }
+
+  function updateGallery(caseEl) {
+    const { frame, imgs } = getParts(caseEl);
+    if (!frame || imgs.length <= 1) return;
+
+    const track = frame.querySelector(".gallery-track");
+    if (!track) return;
+
+    const w = frame.clientWidth;
+    track.style.transform = `translateX(${-imageIndex * w}px)`;
+
+    // "peek / stacked" effect
+    imgs.forEach((img, i) => {
+      img.classList.toggle("is-active", i === imageIndex);
+      img.classList.toggle("is-prev", i === imageIndex - 1);
+      img.classList.toggle("is-next", i === imageIndex + 1);
+    });
+
+    logState("updateGallery");
+  }
+
+  function goToCase(nextIndex) {
+    const list = cases();
+    caseIndex = clamp(nextIndex, 0, list.length - 1);
+
+    // ensure gallery dom for all cases (safe)
+    list.forEach(ensureGalleryDOM);
+
+    // scroll/snap to case
+    list[caseIndex].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+    logState("goToCase");
+  }
+
+  // Touch handling
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  function onTouchStart(e) {
+    if (!isMobile()) return;
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    tracking = true;
+  }
+
+  function onTouchEnd(e) {
+    if (!isMobile() || !tracking) return;
+    tracking = false;
+
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+
+    // ignore vertical
+    if (Math.abs(dy) > Math.abs(dx)) return;
+
+    const swipeThreshold = 35;
+    if (Math.abs(dx) < swipeThreshold) return;
+
+    const dir = dx < 0 ? "left" : "right";
+    const list = cases();
+    const current = list[caseIndex];
+    if (!current) return;
+
+    const { frame, imgs } = getParts(current);
+    const hasGallery = frame && imgs.length > 1;
+
+    // Was swipe started on image frame?
+    const startedOnFrame = e.target && frame && frame.contains(e.target);
+
+    if (MODE === "CASE") {
+      if (hasGallery && startedOnFrame) {
+        // first swipe on media enters gallery
+        enterGallery(current);
+        return;
+      }
+      // otherwise swipe switches cases
+      if (dir === "left") goToCase(caseIndex + 1);
+      else goToCase(caseIndex - 1);
+      return;
+    }
+
+    // MODE === "GALLERY"
+    if (!hasGallery) {
+      exitGallery(current);
+      return;
+    }
+
+    if (dir === "left") {
+      imageIndex++;
+      if (imageIndex >= imgs.length) {
+        // swiped past last image -> exit gallery and open next case
+        exitGallery(current);
+        goToCase(caseIndex + 1);
+        return;
+      }
+      updateGallery(current);
+      return;
+    } else {
+      imageIndex--;
+      if (imageIndex < 0) {
+        // swiped before first image -> exit gallery (back to text)
+        exitGallery(current);
+        return;
+      }
+      updateGallery(current);
+      return;
+    }
+  }
+
+  // Init
+  function init() {
+    if (!isMobile()) return;
+    const list = cases();
+    list.forEach(ensureGalleryDOM);
+    logState("init");
+  }
+
+  window.addEventListener("resize", () => {
+    if (!isMobile()) return;
+    const list = cases();
+    const current = list[caseIndex];
+    if (MODE === "GALLERY" && current) updateGallery(current);
+  });
+
+  document.addEventListener("touchstart", onTouchStart, { passive: true });
+  document.addEventListener("touchend", onTouchEnd, { passive: true });
+
+  init();
+})();
 });
