@@ -675,6 +675,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            if (e.touches && e.touches.length > 1) {
+                tune.isDragging = false;
+                return;
+            }
+
             tune.startX = e.touches ? e.touches[0].clientX : e.clientX;
             tune.startY = e.touches ? e.touches[0].clientY : e.clientY;
             tune.isDragging = true;
@@ -689,21 +694,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const y = e.touches ? e.touches[0].clientY : e.clientY;
             const dx = x - tune.startX;
             const dy = y - tune.startY;
+            const absDx = Math.abs(dx);
+            const absDy = Math.abs(dy);
+            const intentThreshold = 14;
+            const horizontalRatio = 1.35;
 
             // Determine intent once
             if (!tune.intent) {
-                if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
-                    if (Math.abs(dx) > Math.abs(dy)) {
+                if (absDx > intentThreshold || absDy > intentThreshold) {
+                    if (absDx > (absDy * horizontalRatio) && absDx > 20) {
                         tune.intent = 'horizontal';
                         tune.lock = true; // Lock scrolling if horizontal
                     } else {
                         tune.intent = 'vertical';
                         tune.isDragging = false; // Release to native vertical scroll
+                        return;
                     }
                 }
             }
 
-            if (tune.intent === 'horizontal') {
+            if (tune.intent === 'horizontal' && absDx > absDy) {
                 e.preventDefault(); // Prevent native scroll
             }
         };
@@ -765,11 +775,18 @@ document.addEventListener('DOMContentLoaded', () => {
             tune.isDragging = false;
         };
 
+        const cancelTouch = () => {
+            tune.isDragging = false;
+            tune.intent = null;
+            tune.lock = false;
+        };
+
         // Attach listeners to the specific slider root
         // Use passive: false to allow preventDefault
         sliderRoot.addEventListener('touchstart', handleTouchStart, { passive: true });
         sliderRoot.addEventListener('touchmove', handleTouchMove, { passive: false });
         sliderRoot.addEventListener('touchend', handleTouchEnd);
+        sliderRoot.addEventListener('touchcancel', cancelTouch);
 
         // Mouse support for desktop testing
         sliderRoot.addEventListener('mousedown', handleTouchStart);

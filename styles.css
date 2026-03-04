@@ -81,6 +81,7 @@
 html {
     scroll-behavior: smooth;
     font-size: 16px;
+    scroll-padding-top: calc(var(--header-height) + 12px);
 }
 
 body {
@@ -89,6 +90,7 @@ body {
     background-color: var(--color-bg-body);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: auto;
 }
 
 h1,
@@ -406,6 +408,8 @@ img {
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
 }
 
 .hero-image-slider::-webkit-scrollbar {
@@ -805,7 +809,8 @@ img {
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    touch-action: pan-x;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
     cursor: grab;
 }
 
@@ -861,7 +866,7 @@ section[data-slider="kooperativ"] .slider-dots {
     cursor: ew-resize;
     scroll-behavior: auto;
     overscroll-behavior-x: contain;
-    touch-action: pan-x;
+    touch-action: pan-y;
     scroll-snap-stop: always;
     scrollbar-width: none;
 }
