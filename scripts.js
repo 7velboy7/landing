@@ -86,6 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
+                const sliderRoot = targetElement.closest('.project-slider');
+
                 // Check if we need to pre-select a project type
                 const projectType = this.getAttribute('data-project-type');
                 if (projectType) {
@@ -104,6 +106,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     top: offsetPosition,
                     behavior: "smooth"
                 });
+
+                // If target is inside a horizontal project slider, move that slider too.
+                if (sliderRoot) {
+                    sliderRoot.scrollTo({
+                        left: targetElement.offsetLeft,
+                        behavior: 'smooth'
+                    });
+                }
             }
         });
     });
