@@ -554,7 +554,7 @@ img {
     overflow: hidden;
     border: 2px solid #000;
     position: relative;
-    touch-action: pan-y;
+    touch-action: pan-x pan-y;
     height: 100%;
 }
 
@@ -721,7 +721,7 @@ img {
     cursor: ew-resize;
     scroll-behavior: auto;
     overscroll-behavior-x: contain;
-    touch-action: pan-y;
+    touch-action: pan-x pan-y;
     scroll-snap-stop: always;
     scrollbar-width: none;
 }
@@ -729,8 +729,7 @@ img {
 #kooperativ-slider .kooperativ-track {
     display: flex;
     gap: var(--spacing-lg);
-    will-change: transform;
-    touch-action: pan-y;
+    touch-action: pan-x pan-y;
 }
 
 #kooperativ-slider .kooperativ-card {
@@ -809,7 +808,7 @@ img {
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    touch-action: pan-y;
+    touch-action: pan-x pan-y;
     -webkit-overflow-scrolling: touch;
     cursor: grab;
 }
@@ -866,7 +865,7 @@ section[data-slider="kooperativ"] .slider-dots {
     cursor: ew-resize;
     scroll-behavior: auto;
     overscroll-behavior-x: contain;
-    touch-action: pan-y;
+    touch-action: pan-x pan-y;
     scroll-snap-stop: always;
     scrollbar-width: none;
 }
@@ -874,9 +873,8 @@ section[data-slider="kooperativ"] .slider-dots {
 .future-track {
     display: flex;
     gap: var(--spacing-lg);
-    will-change: transform;
     transition: transform 0.45s ease;
-    touch-action: pan-y;
+    touch-action: pan-x pan-y;
 }
 
 .future-slide {
@@ -958,7 +956,7 @@ section[data-slider="kooperativ"] .slider-hint {
 
     #kooperativ-slider {
         overflow-x: hidden;
-        touch-action: pan-y;
+        touch-action: pan-x pan-y;
     }
 
     #kooperativ-slider .project--kooperativ .project-copy {
@@ -1418,6 +1416,8 @@ body.fx-active #lightning-container {
     /* Firefox */
     -ms-overflow-style: none;
     /* IE and Edge */
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
 }
 
 .scroller-container::-webkit-scrollbar {
