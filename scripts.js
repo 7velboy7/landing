@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
             headerCta.setAttribute('data-i18n', nextKey);
         };
 
-        window.addEventListener('scroll', updateHeaderCta);
+        window.addEventListener('scroll', updateHeaderCta, { passive: true });
 
         translationsReady.then(() => {
             updateHeaderCta();
@@ -788,10 +788,18 @@ document.addEventListener('DOMContentLoaded', () => {
         sliderRoot.addEventListener('touchend', handleTouchEnd);
         sliderRoot.addEventListener('touchcancel', cancelTouch);
 
-        // Mouse support for desktop testing
-        sliderRoot.addEventListener('mousedown', handleTouchStart);
-        window.addEventListener('mousemove', handleTouchMove);
-        window.addEventListener('mouseup', handleTouchEnd);
+        // Mouse support for desktop testing — attach global listeners only during drag
+        sliderRoot.addEventListener('mousedown', (e) => {
+            handleTouchStart(e);
+            const onMouseMove = (ev) => handleTouchMove(ev);
+            const onMouseUp = (ev) => {
+                handleTouchEnd(ev);
+                window.removeEventListener('mousemove', onMouseMove);
+                window.removeEventListener('mouseup', onMouseUp);
+            };
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+        });
 
         // Initial setup
         updateDots(caseIndex);
@@ -917,73 +925,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const playfulName = aboutSection ? aboutSection.querySelector('.playful-name') : null;
     let nameDropPlayed = false;
 
+    // Cache spans query once instead of on every scroll tick
+    const aboutSpans = aboutSection ? aboutSection.querySelectorAll('.playful-hey span, .playful-name span') : [];
+    const aboutRevealParagraphs = aboutSection ? aboutSection.querySelectorAll('.about-text-reveal') : [];
+    let aboutRafPending = false;
+
     if (aboutSection && revealCircle) {
         window.addEventListener('scroll', () => {
-            const rect = aboutSection.getBoundingClientRect();
-            const viewHeight = window.innerHeight;
+            if (aboutRafPending) return;
+            aboutRafPending = true;
+            requestAnimationFrame(() => {
+                aboutRafPending = false;
 
-            // Progress calculation for left-to-right fill
-            // 0: section starts entering viewport
-            // 1: section is mostly in view
-            const scrollStart = viewHeight;
-            const scrollEnd = 0;
-            const currentPos = rect.top;
+                const rect = aboutSection.getBoundingClientRect();
+                const viewHeight = window.innerHeight;
 
-            // Fill starts when top of section is at bottom of viewport
-            // and completes when top of section reaches top of viewport
-            let progress = 1 - (currentPos / viewHeight);
-            progress = Math.max(0, Math.min(1, progress));
+                let progress = 1 - (rect.top / viewHeight);
+                progress = Math.max(0, Math.min(1, progress));
 
-            revealCircle.style.transform = `scaleX(${progress})`;
+                revealCircle.style.transform = `scaleX(${progress})`;
 
-            // Trigger playful text animation and apply jumping effect
-            const spans = aboutSection.querySelectorAll('.playful-hey span, .playful-name span');
-            if (progress > 0.05) {
-                aboutSection.classList.add('text-active');
+                if (progress > 0.05) {
+                    aboutSection.classList.add('text-active');
 
-                // One-time falling drop for the name once the section is comfortably in view
-                if (progress > 0.55 && !nameDropPlayed && playfulName) {
-                    nameDropPlayed = true;
-                    playfulName.classList.remove('drop-start');
-                    playfulName.classList.add('is-dropping');
-                    playfulName.addEventListener('animationend', () => {
+                    // One-time falling drop for the name
+                    if (progress > 0.55 && !nameDropPlayed && playfulName) {
+                        nameDropPlayed = true;
+                        playfulName.classList.remove('drop-start');
+                        playfulName.classList.add('is-dropping');
+                        playfulName.addEventListener('animationend', () => {
+                            playfulName.classList.remove('is-dropping');
+                        }, { once: true });
+                    }
+
+                    // Active jumping effect
+                    aboutSpans.forEach((span, index) => {
+                        const jumpHeight = 30;
+                        const waveSpeed = 8;
+                        const offset = Math.sin((progress * waveSpeed) + (index * 0.4)) * jumpHeight * progress;
+                        const rotation = Math.cos((progress * waveSpeed) + (index * 0.4)) * 10 * progress;
+                        span.style.transform = `translateY(${offset}px) rotate(${rotation}deg)`;
+                    });
+
+                    // Trigger typing animation when background is mostly full
+                    if (progress > 0.8) {
+                        aboutRevealParagraphs.forEach(p => p.classList.add('active'));
+                    }
+                } else {
+                    aboutSection.classList.remove('text-active');
+                    aboutSpans.forEach(span => {
+                        span.style.transform = '';
+                    });
+
+                    if (progress === 0 && playfulName) {
+                        nameDropPlayed = false;
                         playfulName.classList.remove('is-dropping');
-                    }, { once: true });
+                        playfulName.classList.add('drop-start');
+                    }
+
+                    aboutRevealParagraphs.forEach(p => p.classList.remove('active'));
                 }
-
-                // Active jumping effect based on progress and index
-                spans.forEach((span, index) => {
-                    // Create a wave effect: each letter jumps based on scroll progress and its index
-                    const jumpHeight = 30; // pixels
-                    const waveSpeed = 8;
-                    const offset = Math.sin((progress * waveSpeed) + (index * 0.4)) * jumpHeight * progress;
-                    const rotation = Math.cos((progress * waveSpeed) + (index * 0.4)) * 10 * progress;
-
-                    span.style.transform = `translateY(${offset}px) rotate(${rotation}deg)`;
-                });
-
-                // Trigger typing animation when background is mostly full
-                if (progress > 0.8) {
-                    const revealParagraphs = aboutSection.querySelectorAll('.about-text-reveal');
-                    revealParagraphs.forEach(p => p.classList.add('active'));
-                }
-            } else {
-                aboutSection.classList.remove('text-active');
-                spans.forEach(span => {
-                    span.style.transform = ''; // Reset
-                });
-
-                // Reset drop if user scrolls far above (so it can play again on re-entry)
-                if (progress === 0 && playfulName) {
-                    nameDropPlayed = false;
-                    playfulName.classList.remove('is-dropping');
-                    playfulName.classList.add('drop-start');
-                }
-
-                // Hide text again if user scrolls way back up
-                const revealParagraphs = aboutSection.querySelectorAll('.about-text-reveal');
-                revealParagraphs.forEach(p => p.classList.remove('active'));
-            }
+            });
         }, { passive: true });
     }
 
@@ -1035,14 +1037,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const defaultChatResponses = {
-        price: "Projects usually start at $300 USD.",
-        services: "Brand illustration, packaging, book & editorial illustration, and posters.",
-        process: "The process has 4 steps: Discovery, Concepts, Refinement, and Final Delivery.",
-        contact: "You can reach Alex at itsme@alexvelboy.com or via the contact form.",
-        default: "Thanks for the question. Please check the sections above or email Alex at itsme@alexvelboy.com."
+        en: {
+            price: "Projects usually start at $300 USD.",
+            services: "Brand illustration, packaging, book & editorial illustration, and posters.",
+            process: "The process has 4 steps: Discovery, Concepts, Refinement, and Final Delivery.",
+            contact: "You can reach Alex at itsme@alexvelboy.com or via the contact form.",
+            default: "Thanks for the question. Please check the sections above or email Alex at itsme@alexvelboy.com.",
+            small_talk_how_are_you: "I'm doing great. Do you have a work-related question?",
+            small_talk_greeting: "Hello."
+        },
+        ua: {
+            price: "Мої проєкти зазвичай стартують від €300.",
+            services: "Алекс пропонує бренд-ілюстрацію, дизайн паковання, книжкову та редакційну ілюстрацію, а також постери.",
+            process: "Процес має 4 кроки: Discovery, Concepts, Refinement і Final Delivery.",
+            contact: "Зв’язатися з Алекс можна через itsme@alexvelboy.com або через контактну форму на цій сторінці.",
+            default: "Сформулюй, будь ласка, запит по проєкту, дедлайну або бюджету — і я допоможу.",
+            small_talk_how_are_you: "У мене все супер, є питання по справі?",
+            small_talk_greeting: "Привіт."
+        },
+        ru: {
+            small_talk_how_are_you: "дела у меня супер, вопрос по делу будет?",
+            small_talk_greeting: "пирвет"
+        }
     };
 
     const intentPatterns = [
+        {
+            key: 'small_talk_how_are_you',
+            patterns: [/\b(how are you|how'?s it going|how are u|how r u|what'?s up|как дела|как делишки|як справи|як ти|як ся маєш)\b/i]
+        },
+        {
+            key: 'small_talk_greeting',
+            patterns: [/^\s*(hi|hello|hey|yo|sup|привет|привіт|здравствуйте|здрасте|добрий день|доброго дня)\s*[!?. ,]*$/i]
+        },
         {
             key: 'contact_telegram',
             patterns: [/telegram|телеграм|телег|\btg\b|\bтг\b|t\.?me/i]
@@ -1348,15 +1375,74 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     };
 
+    const detectMessageLanguage = (text) => {
+        const preferredLang = localStorage.getItem('preferredLang') === 'ua' ? 'ua' : 'en';
+        const latinCount = (text.match(/[a-z]/g) || []).length;
+        const cyrillicCount = (text.match(/[а-яёіїєґ]/g) || []).length;
+
+        if (latinCount > 0 && cyrillicCount === 0) {
+            return 'en';
+        }
+
+        if (cyrillicCount > 0 && latinCount > cyrillicCount * 1.2) {
+            return 'en';
+        }
+
+        if (/[іїєґ]/i.test(text)) {
+            return 'ua';
+        }
+
+        if (cyrillicCount > 0) {
+            const uaHints = /\b(привіт|дякую|будь ласка|проєкт|скільки|потрібно|чому|як)\b/i;
+            const ruHints = /\b(привет|спасибо|пожалуйста|проект|сколько|почему|как дела|как)\b/i;
+
+            if (uaHints.test(text) && !ruHints.test(text)) {
+                return 'ua';
+            }
+            if (ruHints.test(text)) {
+                return 'ru';
+            }
+
+            return preferredLang === 'ua' ? 'ua' : 'ru';
+        }
+
+        return preferredLang;
+    };
+
+    const resolveResponseLanguage = (detectedLang) => {
+        if (detectedLang === 'ua') return 'ua';
+        if (detectedLang === 'en') return 'en';
+        return localStorage.getItem('preferredLang') === 'ua' ? 'ua' : 'en';
+    };
+
+    const getChatResponses = (lang) => {
+        const fallback = defaultChatResponses[lang] || defaultChatResponses.en;
+        const translated = translations[lang] && translations[lang].chat_responses
+            ? translations[lang].chat_responses
+            : {};
+        return { ...fallback, ...translated };
+    };
+
+    const smallTalkIntents = new Set(['small_talk_how_are_you', 'small_talk_greeting']);
+
     function getBotResponse(input) {
         const text = input.toLowerCase().replace(/\s+/g, ' ').trim();
-        const lang = localStorage.getItem('preferredLang') || 'en';
+        const detectedLang = detectMessageLanguage(text);
+        const responseLang = resolveResponseLanguage(detectedLang);
+        const current = getChatResponses(responseLang);
 
-        const current = translations[lang] && translations[lang].chat_responses
-            ? translations[lang].chat_responses
-            : defaultChatResponses;
+        if (detectedLang === 'ru') {
+            const ruIntent = findIntent(text);
+            if (ruIntent && defaultChatResponses.ru[ruIntent]) {
+                return defaultChatResponses.ru[ruIntent];
+            }
+        }
 
         const intent = findIntent(text);
+        if (intent && smallTalkIntents.has(intent)) {
+            return current[intent] || defaultChatResponses.en[intent];
+        }
+
         if (intent && current[intent]) {
             return current[intent];
         }
@@ -1376,207 +1462,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return current.default;
     }
-    (() => {
-  // =========================
-  // SELECTORS — EDIT THESE
-  // =========================
-  const SELECTORS = {
-    caseBlock: ".project",          // один кейс/блок
-    textPanel: ".project-text",     // левый блок с текстом
-    mediaFrame: ".project-media",   // рамка/контейнер для картинок
-    img: "img"                      // картинки внутри mediaFrame
-  };
-
-  // Enable only on mobile (you can tweak breakpoint)
-  const isMobile = () => window.matchMedia("(max-width: 900px)").matches;
-
-  let MODE = "CASE"; // "CASE" | "GALLERY"
-  let caseIndex = 0;
-  let imageIndex = 0;
-
-  const cases = () => Array.from(document.querySelectorAll(SELECTORS.caseBlock));
-
-  function logState(reason="") {
-    console.log("MODE:", MODE, "caseIndex:", caseIndex, "imageIndex:", imageIndex, reason);
-  }
-
-  function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
-
-  function getParts(caseEl) {
-    const text = caseEl.querySelector(SELECTORS.textPanel);
-    const frame = caseEl.querySelector(SELECTORS.mediaFrame);
-    const imgs = frame ? Array.from(frame.querySelectorAll(SELECTORS.img)) : [];
-    return { text, frame, imgs };
-  }
-
-  function ensureGalleryDOM(caseEl) {
-    const { frame, imgs } = getParts(caseEl);
-    if (!frame || imgs.length <= 1) return;
-
-    // wrap images into gallery-track if not done
-    if (!frame.querySelector(".gallery-track")) {
-      const track = document.createElement("div");
-      track.className = "gallery-track";
-      imgs.forEach(img => track.appendChild(img));
-      frame.appendChild(track);
-      frame.classList.add("has-gallery");
-    }
-  }
-
-  function enterGallery(caseEl) {
-    const { text, frame, imgs } = getParts(caseEl);
-    if (!frame || imgs.length <= 1) return;
-
-    MODE = "GALLERY";
-    imageIndex = 0;
-
-    // hide text panel (slide away)
-    if (text) text.classList.add("gallery-hide-text");
-    frame.classList.add("gallery-mode");
-
-    updateGallery(caseEl);
-    logState("enterGallery");
-  }
-
-  function exitGallery(caseEl) {
-    const { text, frame } = getParts(caseEl);
-    MODE = "CASE";
-    imageIndex = 0;
-
-    if (text) text.classList.remove("gallery-hide-text");
-    if (frame) frame.classList.remove("gallery-mode");
-
-    logState("exitGallery");
-  }
-
-  function updateGallery(caseEl) {
-    const { frame, imgs } = getParts(caseEl);
-    if (!frame || imgs.length <= 1) return;
-
-    const track = frame.querySelector(".gallery-track");
-    if (!track) return;
-
-    const w = frame.clientWidth;
-    track.style.transform = `translateX(${-imageIndex * w}px)`;
-
-    // "peek / stacked" effect
-    imgs.forEach((img, i) => {
-      img.classList.toggle("is-active", i === imageIndex);
-      img.classList.toggle("is-prev", i === imageIndex - 1);
-      img.classList.toggle("is-next", i === imageIndex + 1);
-    });
-
-    logState("updateGallery");
-  }
-
-  function goToCase(nextIndex) {
-    const list = cases();
-    caseIndex = clamp(nextIndex, 0, list.length - 1);
-
-    // ensure gallery dom for all cases (safe)
-    list.forEach(ensureGalleryDOM);
-
-    // scroll/snap to case
-    list[caseIndex].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-    logState("goToCase");
-  }
-
-  // Touch handling
-  let startX = 0;
-  let startY = 0;
-  let tracking = false;
-
-  function onTouchStart(e) {
-    if (!isMobile()) return;
-    const t = e.touches[0];
-    startX = t.clientX;
-    startY = t.clientY;
-    tracking = true;
-  }
-
-  function onTouchEnd(e) {
-    if (!isMobile() || !tracking) return;
-    tracking = false;
-
-    const t = e.changedTouches[0];
-    const dx = t.clientX - startX;
-    const dy = t.clientY - startY;
-
-    // ignore vertical
-    if (Math.abs(dy) > Math.abs(dx)) return;
-
-    const swipeThreshold = 35;
-    if (Math.abs(dx) < swipeThreshold) return;
-
-    const dir = dx < 0 ? "left" : "right";
-    const list = cases();
-    const current = list[caseIndex];
-    if (!current) return;
-
-    const { frame, imgs } = getParts(current);
-    const hasGallery = frame && imgs.length > 1;
-
-    // Was swipe started on image frame?
-    const startedOnFrame = e.target && frame && frame.contains(e.target);
-
-    if (MODE === "CASE") {
-      if (hasGallery && startedOnFrame) {
-        // first swipe on media enters gallery
-        enterGallery(current);
-        return;
-      }
-      // otherwise swipe switches cases
-      if (dir === "left") goToCase(caseIndex + 1);
-      else goToCase(caseIndex - 1);
-      return;
-    }
-
-    // MODE === "GALLERY"
-    if (!hasGallery) {
-      exitGallery(current);
-      return;
-    }
-
-    if (dir === "left") {
-      imageIndex++;
-      if (imageIndex >= imgs.length) {
-        // swiped past last image -> exit gallery and open next case
-        exitGallery(current);
-        goToCase(caseIndex + 1);
-        return;
-      }
-      updateGallery(current);
-      return;
-    } else {
-      imageIndex--;
-      if (imageIndex < 0) {
-        // swiped before first image -> exit gallery (back to text)
-        exitGallery(current);
-        return;
-      }
-      updateGallery(current);
-      return;
-    }
-  }
-
-  // Init
-  function init() {
-    if (!isMobile()) return;
-    const list = cases();
-    list.forEach(ensureGalleryDOM);
-    logState("init");
-  }
-
-  window.addEventListener("resize", () => {
-    if (!isMobile()) return;
-    const list = cases();
-    const current = list[caseIndex];
-    if (MODE === "GALLERY" && current) updateGallery(current);
-  });
-
-  document.addEventListener("touchstart", onTouchStart, { passive: true });
-  document.addEventListener("touchend", onTouchEnd, { passive: true });
-
-  init();
-})();
 });
