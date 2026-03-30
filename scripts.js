@@ -801,6 +801,17 @@ document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener('mouseup', onMouseUp);
         });
 
+        if (dotsContainer) {
+            const dots = Array.from(dotsContainer.querySelectorAll('.dot'));
+            dots.forEach((dot, i) => {
+                dot.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (MODE === 'GALLERY') exitGalleryMode();
+                    snapToCase(i);
+                });
+            });
+        }
+
         // Initial setup
         updateDots(caseIndex);
         logState();
